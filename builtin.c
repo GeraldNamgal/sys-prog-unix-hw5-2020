@@ -74,7 +74,7 @@ int is_export(char **args, int *resultp)
 }
 
 /* *
- * TODO
+ * is_cd( char **args, int *resultp )
  */
 int is_cd( char **args, int *resultp )
 {
