@@ -10,13 +10,16 @@
 #include	"varlib.h"
 #include	"builtin.h"
 #include    <unistd.h>
+#include    <stdbool.h>
 
-int is_builtin(char **args, int *resultp)
+static bool is_number(char *);
+
 /*
  * purpose: run a builtin command 
  * returns: 1 if args[0] is builtin, 0 if not
  * details: test args[0] against all known builtins.  Call functions
  */
+int is_builtin(char **args, int *resultp)
 {
 	if ( is_assign_var(args[0], resultp) )
 		return 1;
@@ -24,7 +27,11 @@ int is_builtin(char **args, int *resultp)
 		return 1;
 	if ( is_export(args, resultp) )
 		return 1;
-    if ( is_cd(args, resultp) ) {
+    if ( is_cd(args, resultp) )
+        return 1;
+    if ( is_exit(args, resultp) )
+        return 1;
+    if ( is_read(args, resultp) ) {
         return 1;
     }
 	return 0;
@@ -79,29 +86,72 @@ int is_export(char **args, int *resultp)
 int is_cd( char **args, int *resultp )
 {
     if ( strcmp(args[0], "cd") == 0 ) {
-        if ( args[1] != NULL ) {
-            if ( chdir(args[1]) == 0 )
+        if ( args[1] != NULL ) {                      // there are args included
+            if ( chdir( args[1] ) == 0 )
                 *resultp = 0;                         // changed dir succesfully            
-            else
+            else {
                 *resultp = -1;                       // error changing directory
+                fprintf( stderr, "smallsh: cd: can't cd to %s\n", args[1] );
+            }
         }            
-        else {
-            if ( chdir( getenv( "HOME" ) ) == 0 ) 
+        else {                                     // else no args, just command
+            if ( chdir( getenv( "HOME" ) ) == 0 )    // change to home directory
                 *resultp = 0;                         // changed dir succesfully   
-            else
+            else {
                 *resultp = -1;                       // error changing directory
+                fprintf( stderr, "smallsh: cd: can't cd to %s\n"
+                        , getenv( "HOME" ) );
+            }
         }
-        return 1;                                               // is cd command
+        return 1;                                    // return it's a cd command
     }
-    return 0;                                               // is not cd command
+    return 0;                                    // return it's not a cd command
 }
 
-int assign(char *str)
+int is_exit( char **args, int *resultp )
+{
+    if ( strcmp( args[0], "exit" ) == 0 ) {
+        if ( args[1] != NULL ) {                      // there are args included
+            if ( is_number( args[1] ) )                            // valid num?
+                exit( atoi( args[1] ) );            // exit passing in first arg           
+            else {                                       // else not a valid num
+                *resultp = -1;                                     // flag error 
+                fprintf(stderr, "smallsh: exit: Illegal number: %s\n", args[1]);
+            }
+        }            
+        else                                       // else no args, just command
+            exit( get_last_result() );
+        return 1;                                 // return it's an exit command
+    }
+    return 0;                                 // return it's not an exit command
+}
+
+/* *
+ *
+ * purpose: utility function
+ * note: code referenced
+ * https://www.geeksforgeeks.org/program-check-input-integer-string/
+ */
+bool is_number(char *str)
+{
+    for ( int i = 0; i < strlen(str); i++ ) 
+        if ( isdigit(str[i]) == false ) 
+            return false; 
+  
+    return true;
+}
+
+int is_read( char **args, int *resultp )
+{
+    return 0;
+}
+
 /*
  * purpose: execute name=val AND ensure that name is legal
  * returns: -1 for illegal lval, or result of VLstore 
  * warning: modifies the string, but retores it to normal
  */
+int assign(char *str)
 {
 	char	*cp;
 	int	rv ;

@@ -9,5 +9,7 @@ int assign(char *);
 int okname(char *);
 int is_export(char **, int *);
 int is_cd(char **, int *);
+int is_exit(char **, int *);
+int is_read(char **, int *);
 
 #endif

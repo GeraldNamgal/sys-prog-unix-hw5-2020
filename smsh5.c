@@ -19,6 +19,8 @@
 
 #define	DFL_PROMPT	"> "
 
+static int last_result = 17;                             // to save exit statuses 
+
 void	setup();
 
 int main()
@@ -29,14 +31,20 @@ int main()
 	prompt = DFL_PROMPT ;
 	setup();
 
-	while ( (cmdline = next_cmd(prompt, stdin)) != NULL ){
-		if ( (arglist = splitline(cmdline)) != NULL  ){
+	while ( (cmdline = next_cmd(prompt, stdin)) != NULL ) {
+		if ( (arglist = splitline(cmdline)) != NULL  ) {
 			result = process(arglist);
+            last_result = result;                                 // save result
 			freelist(arglist);
 		}
 		free(cmdline);
 	}
 	return result;
+}
+
+int get_last_result()
+{
+    return last_result;
 }
 
 void setup()
