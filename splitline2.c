@@ -20,30 +20,29 @@
  *          calls fatal from emalloc()
  *   notes: allocates space in BUFSIZ chunks.  
  */
-char * next_cmd(char *prompt, FILE *fp)
-{
-	int	c;				/* input char		*/
-	FLEXSTR	s;				/* the command		*/
+char * next_cmd(char *prompt, FILE *fp) {
+	int	c;				                                  /* input char		*/
+	FLEXSTR	s;				                             /* the command		*/
 	int	pos = 0;
     char prev_char = ' ';
-    bool found_comment = false;
+    bool found_comment = false; 
 
-	fs_init(&s, 0);				/* initialize the str	*/
-	printf("%s", prompt);				/* prompt user	*/
-	while( ( c = getc(fp)) != EOF && !found_comment ) 
-	{        
-        /* end of command? */
-		if ( c == '\n' )
+	fs_init(&s, 0);				                     /* initialize the str	*/
+	printf("%s", prompt);				                  /* prompt user	*/
+	while( ( c = getc(fp)) != EOF ) {        
+		if ( c == '\n' )                                 /* end of command? */
 			break;
+
+        if ( found_comment == true )
+            continue;
 
         if ( c == '#' && prev_char == ' ' ) {
             found_comment = true;
-            break;
-        }
-
-		/* no, add to buffer */       
-        fs_addch(&s, c);
-        pos++;        
+            continue;
+        } 
+		
+		fs_addch(&s, c);                                 /* no, add to buffer */
+		pos++;
 
         prev_char = c;
 	}
