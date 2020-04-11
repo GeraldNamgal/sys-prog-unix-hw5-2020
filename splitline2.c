@@ -36,7 +36,7 @@ char * next_cmd(char *prompt, FILE *fp) {
         if ( found_comment == true )
             continue;
 
-        if ( c == '#' && prev_char == ' ' ) {
+        if ( c == '#' && ( prev_char == ' ' || prev_char == '\t' ) ) {
             found_comment = true;
             continue;
         } 
