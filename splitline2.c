@@ -11,6 +11,7 @@
 #include	"splitline2.h"
 #include	"smsh.h"
 #include	"flexstr2.h"
+#include    <stdbool.h>
 
 /*
  * purpose: read next command line from fp
@@ -24,18 +25,27 @@ char * next_cmd(char *prompt, FILE *fp)
 	int	c;				/* input char		*/
 	FLEXSTR	s;				/* the command		*/
 	int	pos = 0;
+    char prev_char = ' ';
+    bool found_comment = false;
 
 	fs_init(&s, 0);				/* initialize the str	*/
 	printf("%s", prompt);				/* prompt user	*/
-	while( ( c = getc(fp)) != EOF ) 
-	{
-		/* end of command? */
+	while( ( c = getc(fp)) != EOF && !found_comment ) 
+	{        
+        /* end of command? */
 		if ( c == '\n' )
 			break;
 
-		/* no, add to buffer */
-		fs_addch(&s, c);
-		pos++;
+        if ( c == '#' && prev_char == ' ' ) {
+            found_comment = true;
+            break;
+        }
+
+		/* no, add to buffer */       
+        fs_addch(&s, c);
+        pos++;        
+
+        prev_char = c;
 	}
 
 	if ( c == EOF && pos == 0 )		/* EOF and no input	*/
