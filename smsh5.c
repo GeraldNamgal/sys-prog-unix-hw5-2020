@@ -19,7 +19,7 @@
 
 #define	DFL_PROMPT	"> "
 
-static int last_result = 17;                             // to save exit statuses 
+static int last_result = 17;                            // to save exit statuses 
 
 void	setup();
 

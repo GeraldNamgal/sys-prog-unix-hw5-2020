@@ -1,6 +1,8 @@
 #ifndef	BUILTIN_H
 #define	BUILTIN_H
 
+#define VAR_MAX_CHARS   80     // TODO: max buffer size ok (not sure they care)?
+
 int is_builtin(char **args, int *resultp);
 int is_assign_var(char *cmd, int *resultp);
 int is_list_vars(char *cmd, int *resultp);

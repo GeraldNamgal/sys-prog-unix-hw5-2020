@@ -70,7 +70,7 @@ int is_list_vars(char *cmd, int *resultp)
  */
 int is_export(char **args, int *resultp)
 {
-	if ( strcmp(args[0], "export") == 0 ){
+	if ( strcmp(args[0], "export") == 0 ) {
 		if ( args[1] != NULL && okname(args[1]) )
 			*resultp = VLexport(args[1]);
 		else
@@ -112,15 +112,19 @@ int is_exit( char **args, int *resultp )
 {
     if ( strcmp( args[0], "exit" ) == 0 ) {
         if ( args[1] != NULL ) {                      // there are args included
-            if ( is_number( args[1] ) )                            // valid num?
-                exit( atoi( args[1] ) );            // exit passing in first arg           
+            if ( is_number( args[1] ) ) {                          // valid num?
+                *resultp = 0;                                     // flag sucess
+                exit( atoi( args[1] ) );            // exit passing in first arg
+            }           
             else {                                       // else not a valid num
                 *resultp = -1;                                     // flag error 
                 fprintf(stderr, "smallsh: exit: Illegal number: %s\n", args[1]);
             }
         }            
-        else                                       // else no args, just command
+        else {                                     // else no args, just command
+            *resultp = 0;                                        // flag success
             exit( get_last_result() );
+        }
         return 1;                                 // return it's an exit command
     }
     return 0;                                 // return it's not an exit command
@@ -141,9 +145,40 @@ bool is_number(char *str)
     return true;
 }
 
-int is_read( char **args, int *resultp )
-{
-    return 0;
+int is_read( char **args, int *resultp ) {
+    if ( strcmp( args[0], "read" ) == 0 ) {
+        if ( args[1] == NULL ) {                          // required arg given?
+            *resultp = -1;                                         // flag error
+            fprintf( stderr, "smallsh: read: arg count\n" );
+        }
+        else {
+            char buff[VAR_MAX_CHARS];            
+            fgets(buff, VAR_MAX_CHARS, stdin);                 // get user input
+            buff[strcspn ( buff, "\n" )] = '\0';    // remove newline from input
+            
+            char *name_val_pair;                             // concatenating...
+            name_val_pair = malloc( strlen(buff) + strlen(args[1]) + 2 );
+            if( name_val_pair == NULL ) {                    // if malloc failed
+                *resultp = -1;                                     // flag error
+                fprintf( stderr, "smallsh: read: malloc error\n" );
+                return 1;
+            }
+            strcat( strcpy( name_val_pair, args[1] ), "=" );       // do concats 
+            strcat( name_val_pair, buff );               
+
+            int ret_value = assign( name_val_pair );      // assign input to var
+            free(name_val_pair);                                  // free malloc
+            if ( ret_value == -1 ) {
+                *resultp = -1;                                     // flag error
+                fprintf( stderr, "smallsh: read: %s: bad variable name\n"
+                        , args[1] );                 
+                return 1;
+            }                                               
+            *resultp = ret_value;                // flag success or not (0 or 1)
+        }
+        return 1;                                  // return it's a read command
+    }
+    return 0;                                  // return it's not a read command
 }
 
 /*
@@ -162,6 +197,7 @@ int assign(char *str)
 	*cp = '=';
 	return rv;
 }
+
 int okname(char *str)
 /*
  * purpose: determines if a string is a legal variable name
