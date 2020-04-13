@@ -31,7 +31,9 @@ int is_builtin(char **args, int *resultp)
         return 1;
     if ( is_exit(args, resultp) )
         return 1;
-    if ( is_read(args, resultp) ) {
+    if ( is_read(args, resultp) )
+        return 1;
+    if ( is_unset(args, resultp) ) {
         return 1;
     }
 	return 0;
@@ -60,6 +62,18 @@ int is_list_vars(char *cmd, int *resultp)
 		return 1;
 	}
 	return 0;
+}
+
+int is_unset(char **args, int *resultp)
+{
+    if ( strcmp(args[0],"unset") == 0 ) {                     /* 'unset' command? */
+        if ( args[1] != NULL )
+            *resultp = VLdelete(args[1]);
+		else
+            *resultp = -1;
+		return 1;
+	}
+    return 0;
 }
 
 /*

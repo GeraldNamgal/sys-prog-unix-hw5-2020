@@ -165,6 +165,39 @@ void VLlist()
 	}
 }
 
+int VLdelete(char *name)
+{
+    char *ptr;
+    int i, j;
+
+    // TODO: is '&& tab[i].str != NULL' correct? Is it stopping too soon?
+    for ( i = 0 ; i < MAXVARS && tab[i].str != NULL ; i++ )
+	{
+        ptr = malloc( strlen(tab[i].str) + 1 );    // copying name from table...        
+        // TODO: check if malloc failed
+        for ( j = 0; tab[i].str[j] != '='; j++ )
+            ptr[j] = tab[i].str[j];
+        ptr[j] = '\0';
+
+        if ( strcmp( ptr, name ) == 0 )                 // found name to delete?
+        {
+            // TODO: set the '_' variable to what you're deleting
+
+            // TODO: how does dash delete values? Does it shift everything or leave a
+            // blank or what?
+            
+            // TODO: is '&& tab[i].str != NULL' correct? Is it stopping too soon?
+            for ( int k = i; k < MAXVARS - 1 && tab[k].str != NULL; k++ )
+                tab[k] = tab[k+1];
+            free(ptr);
+            return 0;
+        }
+
+        free(ptr);
+    }
+    return 1;
+}
+
 int VLenviron2table(char *env[])
 /*
  * initialize the variable table by loading array of strings
