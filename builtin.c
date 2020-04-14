@@ -66,14 +66,14 @@ int is_list_vars(char *cmd, int *resultp)
 
 int is_unset(char **args, int *resultp)
 {
-    if ( strcmp(args[0],"unset") == 0 ) {                     /* 'unset' command? */
+    if ( strcmp(args[0],"unset") == 0 ) {                 /* 'unset' command? */
         if ( args[1] != NULL )
             *resultp = VLdelete(args[1]);
 		else
-            *resultp = -1;
-		return 1;
+            *resultp = -1;                           // flag error (missing arg)
+		return 1;                                  // return was 'unset' command
 	}
-    return 0;
+    return 0;                                  // return was not 'unset' command
 }
 
 /*
