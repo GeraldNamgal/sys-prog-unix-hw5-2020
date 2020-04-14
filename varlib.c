@@ -183,7 +183,7 @@ int VLdelete(char *name)
 
         if ( strcmp( ptr, name ) == 0 )                 // found name to delete?
         {
-            // TODO: handle _=last_argument?
+            // TODO: handle _=last_argument or not necessary?
             
             for ( k = i; k < MAXVARS - 1 && tab[k].str != NULL; k++ )
                 tab[k] = tab[k+1];                  // shift element to the left
