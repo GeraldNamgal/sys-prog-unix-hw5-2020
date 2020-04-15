@@ -8,6 +8,7 @@
 #include	"varlib.h"
 #include	"controlflow.h"
 #include	"process.h"
+#include    <string.h>
 
 
 /* process.c
@@ -55,10 +56,19 @@ int do_command(char **args)
 	void varsub(char **);
 	int  is_builtin(char **, int *);
 	int  rv;
+    int  exclamation = 0;
 
+    if ( strcmp( args[0], "!" ) == 0 ) {
+        exclamation = 1;
+        args++;
+    }
 	varsub(args);				/* move this earlier	*/
 	if ( !is_builtin(args, &rv) )		/* if not done by shell	*/ 
 		rv = execute(args);		/* fork and exec it	*/
+    if ( exclamation == 1 ) {
+        rv = !rv;
+    }
+
 	return rv;				/* return exit status	*/
 }
 

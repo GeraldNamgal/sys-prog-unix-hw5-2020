@@ -18,27 +18,39 @@
  **/
 
 #define	DFL_PROMPT	"> "
+#define BUFF_SIZE 4096
 
 static int last_result = 17;                            // to save exit statuses 
 
 void	setup();
 
-int main()
+int main( int ac, char *av[] )
 {
-	char	*cmdline, *prompt, **arglist;
+	char	*cmdline, *prompt, **arglist, line[BUFF_SIZE];
 	int	result;
+    FILE *fp = stdin;
 
 	prompt = DFL_PROMPT ;
 	setup();
 
-	while ( (cmdline = next_cmd(prompt, stdin)) != NULL ) {
-		if ( (arglist = splitline(cmdline)) != NULL  ) {
-			result = process(arglist);
-            last_result = result;                                 // save result
-			freelist(arglist);
-		}
-		free(cmdline);
-	}
+    if ( *++av != NULL ) {
+        fp = fopen( *av, "r" );
+        if (fp == NULL) {
+            fprintf( stderr, "smallsh: error opening file\n" );
+            exit(1);
+        }
+        prompt = "";
+    }
+    
+    while ( (cmdline = next_cmd(prompt, fp)) != NULL ) {
+        if ( (arglist = splitline(cmdline)) != NULL  ) {
+            result = process(arglist);
+            last_result = result;                             // save result
+            freelist(arglist);
+        }
+        free(cmdline);
+    }
+    
 	return result;
 }
 
