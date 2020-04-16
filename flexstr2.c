@@ -132,8 +132,7 @@ fs_free(FLEXSTR *p)
 	free(p->fs_str);
 }
 
-char *
-fs_getstr(FLEXSTR *p)
+char *fs_getstr(FLEXSTR *p)
 {
     /* nul-terminate the string before returning it*/
 
