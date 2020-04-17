@@ -286,6 +286,7 @@ void varsub(char **args, int option)
         }
 
         // TODO: free original command line before replace with new one (like below)
+        // and whatever else
     }
 
 	if (option == 0) {
