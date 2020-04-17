@@ -243,30 +243,29 @@ void varsub(char **args, int option)
    
     if (option == 1) {
         for ( i = 0; cmdline[i] != '\0'; i++ ) {
-            if ( cmdline[i] != '$' && dollar_found )
-                fs_addch(&s, cmdline[i]);
+            if ( cmdline[i] != '$' && dollar_found )   // new string being spun?
+                fs_addch(&s, cmdline[i]);                   // add to new string
             else if ( cmdline[i] == '$' ) {
                 if ( !dollar_found ) {           // dollar not found previously?
                     dollar_found = 1;                              // flag found
-                    fs_init(&s, 0);                                 // init flex
-                    for ( j = 0; j < i; j++ )
-                        fs_addch(&s, cmdline[j]);
+                    fs_init(&s, 0);                           // init new string
+                    for ( j = 0; j < i; j++ )        // fill new with old string
+                        fs_addch(&s, cmdline[j]);   
                 }
-                fs_init(&buff, 0);
-                j = i + 1;                                    // index after '$'
-                if ( isalnum( cmdline[j] ) || cmdline[j] == '_' )   // var name?
+                fs_init(&buff, 0);                        // init temporary buff
+                j = i + 1;                               // index just after '$'
+                if ( isalnum( cmdline[j] ) || cmdline[j] == '_' ) // a var name?
                 {
-                    fs_addch(&buff, cmdline[j]);
+                    fs_addch(&buff, cmdline[j]);   // adding var name to buff...
                     while ( isalnum( cmdline[++j] ) || cmdline[j] == '_' ) {
                         fs_addch(&buff, cmdline[j]);
                     }
                     fs_addch(&buff, '\0');
-                    newstr = VLlookup( fs_getstr(&buff) );
+                    newstr = VLlookup( fs_getstr(&buff) );   // look up value...
                     if ( newstr == NULL )
                         newstr = "";
-                    // TODO
-                    fs_addstr(&s, newstr);
-                    i = j - 1;
+                    fs_addstr(&s, newstr);            // add value to new string
+                    i = j - 1;                            // update i's position
                 }
                 else if ( isdigit( cmdline[j] ) )                   // a number?
                 {
@@ -282,15 +281,14 @@ void varsub(char **args, int option)
                 {
                     // TODO
                 }
-
-                fs_free( &buff ); 
+                fs_free( &buff );                         // free temporary buff
             }
         }
         if (dollar_found) {
             // TODO: how to check if need to free or not?
             free(*args);
-            *args = strdup( fs_getstr(&s) );
-            fs_free ( &s );
+            *args = strdup( fs_getstr(&s) );          // copy new string to args
+            fs_free ( &s );                                   // free new string
         }
 
         // TODO: freed FLEXSTRs correctly?

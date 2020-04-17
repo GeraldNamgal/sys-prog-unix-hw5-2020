@@ -52,6 +52,8 @@ int main( int ac, char *av[] )
         }
         // TODO: need to free if a file passed in?
         free(cmdline);
+
+        // TODO: need to close file pointer
     }    
 	return result;
 }
