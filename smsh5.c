@@ -30,7 +30,7 @@ int main( int ac, char *av[] )
 	char	*cmdline, *prompt, **arglist;
 	int	result;
     FILE *fp = stdin;
-    void varsub(char **, int);
+    void varsub(char **);
 
 	prompt = DFL_PROMPT ;
 	setup();
@@ -44,7 +44,7 @@ int main( int ac, char *av[] )
         prompt = "";                                            // change prompt
     }    
     while ( (cmdline = next_cmd(prompt, fp)) != NULL ) {           
-        varsub(&cmdline, 1);
+        varsub(&cmdline);
         if ( (arglist = splitline(cmdline)) != NULL  ) {
             result = process(arglist);
             last_result = result;                                 // save result

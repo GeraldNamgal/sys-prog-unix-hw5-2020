@@ -229,82 +229,66 @@ int okname(char *str)
 }
 
 /*
- * TODO: delete option afer finish
+ * TODO
  * step through args.  REPLACE any arg with leading $ with the
  * value for that variable or "" if no match.
  * note: this is NOT how regular sh works
  */
-void varsub(char **args, int option)
+void varsub(char **args)
 {
 	int	i, j, dollar_found = 0;
 	char    *newstr,
             *cmdline = *args;
     FLEXSTR s, buff;
    
-    if (option == 1) {
-        for ( i = 0; cmdline[i] != '\0'; i++ ) {
-            if ( cmdline[i] != '$' && dollar_found )   // new string being spun?
-                fs_addch(&s, cmdline[i]);                   // add to new string
-            else if ( cmdline[i] == '$' ) {
-                if ( !dollar_found ) {           // dollar not found previously?
-                    dollar_found = 1;                              // flag found
-                    fs_init(&s, 0);                           // init new string
-                    for ( j = 0; j < i; j++ )        // fill new with old string
-                        fs_addch(&s, cmdline[j]);   
-                }
-                fs_init(&buff, 0);                        // init temporary buff
-                j = i + 1;                               // index just after '$'
-                if ( isalnum( cmdline[j] ) || cmdline[j] == '_' ) // a var name?
-                {
-                    fs_addch(&buff, cmdline[j]);   // adding var name to buff...
-                    while ( isalnum( cmdline[++j] ) || cmdline[j] == '_' ) {
-                        fs_addch(&buff, cmdline[j]);
-                    }
-                    fs_addch(&buff, '\0');
-                    newstr = VLlookup( fs_getstr(&buff) );   // look up value...
-                    if ( newstr == NULL )
-                        newstr = "";
-                    fs_addstr(&s, newstr);            // add value to new string
-                    i = j - 1;                            // update i's position
-                }
-                else if ( isdigit( cmdline[j] ) )                   // a number?
-                {
-                    // TODO
-
-                    fs_addch(&buff, cmdline[j]);
-                    while ( isdigit( cmdline[++j] ) ) {
-                        fs_addch(&buff, cmdline[j]);
-                    }
-                    i = j - 1;
-                }
-                else                                  // else just a dollar sign
-                {
-                    // TODO
-                }
-                fs_free( &buff );                         // free temporary buff
+    for ( i = 0; cmdline[i] != '\0'; i++ )
+    {
+        if ( cmdline[i] != '$' && dollar_found )   // new string being spun?
+            fs_addch(&s, cmdline[i]);                   // add to new string
+        else if ( cmdline[i] == '$' )
+        {
+            if ( !dollar_found ) {           // dollar not found previously?
+                dollar_found = 1;                              // flag found
+                fs_init(&s, 0);                           // init new string
+                for ( j = 0; j < i; j++ )        // fill new with old string
+                    fs_addch(&s, cmdline[j]);   
             }
-        }
-        if (dollar_found) {
-            // TODO: how to check if need to free or not?
-            free(*args);
-            *args = strdup( fs_getstr(&s) );          // copy new string to args
-            fs_free ( &s );                                   // free new string
-        }
-
-        // TODO: freed FLEXSTRs correctly?
-
-        // TODO: free original command line before replace with new one (like below)
-        // and whatever else
-    }
-
-	if (option == 0) {
-        for( i = 0 ; args[i] != NULL ; i++ )
-            if ( args[i][0] == '$' ) {
-                newstr = VLlookup( args[i]+1 );
+            fs_init(&buff, 0);                        // init temporary buff
+            j = i + 1;                               // index just after '$'
+            if ( isalnum( cmdline[j] ) || cmdline[j] == '_' ) // a var name?
+            {
+                fs_addch(&buff, cmdline[j]);   // adding var name to buff...
+                while ( isalnum( cmdline[++j] ) || cmdline[j] == '_' ) {
+                    fs_addch(&buff, cmdline[j]);
+                }
+                fs_addch(&buff, '\0');
+                newstr = VLlookup( fs_getstr(&buff) );   // look up value...
                 if ( newstr == NULL )
                     newstr = "";
-                free(args[i]);
-                args[i] = strdup(newstr);
+                fs_addstr(&s, newstr);            // add value to new string
+                i = j - 1;                            // update i's position
             }
+            else if ( isdigit( cmdline[j] ) )                   // a number?
+            {
+                // TODO
+
+                fs_addch(&buff, cmdline[j]);
+                while ( isdigit( cmdline[++j] ) ) {
+                    fs_addch(&buff, cmdline[j]);
+                }
+                i = j - 1;
+            }
+            else                                  // else just a dollar sign
+            {
+                // TODO
+            }
+            fs_free( &buff );                         // free temporary buff
+        }
     }
+    if (dollar_found) {                 // dollar found (spun a new string)?
+        free(*args);
+        *args = strdup( fs_getstr(&s) );          // copy new string to args
+        fs_free ( &s );                                   // free new string
+    }
+    
 }
