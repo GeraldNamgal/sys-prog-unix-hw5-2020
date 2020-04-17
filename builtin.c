@@ -243,7 +243,9 @@ void varsub(char **args, int option)
    
     if (option == 1) {
         for ( i = 0; cmdline[i] != '\0'; i++ ) {
-            if ( cmdline[i] == '$' ) {
+            if ( cmdline[i] != '$' && dollar_found )
+                fs_addch(&s, cmdline[i]);
+            else if ( cmdline[i] == '$' ) {
                 if ( !dollar_found ) {           // dollar not found previously?
                     dollar_found = 1;                              // flag found
                     fs_init(&s, 0);                                 // init flex
@@ -268,6 +270,8 @@ void varsub(char **args, int option)
                 }
                 else if ( isdigit( cmdline[j] ) )                   // a number?
                 {
+                    // TODO
+
                     fs_addch(&buff, cmdline[j]);
                     while ( isdigit( cmdline[++j] ) ) {
                         fs_addch(&buff, cmdline[j]);
@@ -276,14 +280,20 @@ void varsub(char **args, int option)
                 }
                 else                                  // else just a dollar sign
                 {
+                    // TODO
+                }
 
-                } 
+                fs_free( &buff ); 
             }
         }
         if (dollar_found) {
+            // TODO: how to check if need to free or not?
             free(*args);
             *args = strdup( fs_getstr(&s) );
+            fs_free ( &s );
         }
+
+        // TODO: freed FLEXSTRs correctly?
 
         // TODO: free original command line before replace with new one (like below)
         // and whatever else
