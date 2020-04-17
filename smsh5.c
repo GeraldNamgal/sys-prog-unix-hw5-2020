@@ -7,6 +7,7 @@
 #include	"splitline2.h"
 #include	"varlib.h"
 #include	"process.h"
+#include    "builtin.h"
 
 /**
  **	small-shell version 5
@@ -29,6 +30,7 @@ int main( int ac, char *av[] )
 	char	*cmdline, *prompt, **arglist;
 	int	result;
     FILE *fp = stdin;
+    void varsub(char **, int);
 
 	prompt = DFL_PROMPT ;
 	setup();
@@ -40,17 +42,17 @@ int main( int ac, char *av[] )
             exit(1);
         }
         prompt = "";                                            // change prompt
-    }
-    
-    while ( (cmdline = next_cmd(prompt, fp)) != NULL ) {
+    }    
+    while ( (cmdline = next_cmd(prompt, fp)) != NULL ) {           
+        varsub(&cmdline, 1);
         if ( (arglist = splitline(cmdline)) != NULL  ) {
             result = process(arglist);
             last_result = result;                                 // save result
             freelist(arglist);
         }
+        // TODO: need to free if a file passed in?
         free(cmdline);
-    }
-    
+    }    
 	return result;
 }
 

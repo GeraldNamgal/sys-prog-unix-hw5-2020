@@ -11,6 +11,7 @@
 #include	"builtin.h"
 #include    <unistd.h>
 #include    <stdbool.h>
+#include	"flexstr2.h"
 
 static bool is_number(char *);
 
@@ -226,22 +227,75 @@ int okname(char *str)
 	}
 	return ( cp != str );	/* no empty strings, either */
 }
+
 /*
+ * TODO: delete option afer finish
  * step through args.  REPLACE any arg with leading $ with the
  * value for that variable or "" if no match.
  * note: this is NOT how regular sh works
  */
-void varsub(char **args)
+void varsub(char **args, int option)
 {
-	int	i;
-	char	*newstr;
+	int	i, j, dollar_found = 0;
+	char    *newstr,
+            *cmdline = *args;
+    FLEXSTR s, buff;
+   
+    if (option == 1) {
+        for ( i = 0; cmdline[i] != '\0'; i++ ) {
+            if ( cmdline[i] == '$' ) {
+                if ( !dollar_found ) {           // dollar not found previously?
+                    dollar_found = 1;                              // flag found
+                    fs_init(&s, 0);                                 // init flex
+                    for ( j = 0; j < i; j++ )
+                        fs_addch(&s, cmdline[j]);
+                }
+                fs_init(&buff, 0);
+                j = i + 1;                                    // index after '$'
+                if ( isalnum( cmdline[j] ) || cmdline[j] == '_' )   // var name?
+                {
+                    fs_addch(&buff, cmdline[j]);
+                    while ( isalnum( cmdline[++j] ) || cmdline[j] == '_' ) {
+                        fs_addch(&buff, cmdline[j]);
+                    }
+                    fs_addch(&buff, '\0');
+                    newstr = VLlookup( fs_getstr(&buff) );
+                    if ( newstr == NULL )
+                        newstr = "";
+                    // TODO
+                    fs_addstr(&s, newstr);
+                    i = j - 1;
+                }
+                else if ( isdigit( cmdline[j] ) )                   // a number?
+                {
+                    fs_addch(&buff, cmdline[j]);
+                    while ( isdigit( cmdline[++j] ) ) {
+                        fs_addch(&buff, cmdline[j]);
+                    }
+                    i = j - 1;
+                }
+                else                                  // else just a dollar sign
+                {
 
-	for( i = 0 ; args[i] != NULL ; i++ )
-		if ( args[i][0] == '$' ){
-			newstr = VLlookup( args[i]+1 );
-			if ( newstr == NULL )
-				newstr = "";
-			free(args[i]);
-			args[i] = strdup(newstr);
-		}
+                } 
+            }
+        }
+        if (dollar_found) {
+            free(*args);
+            *args = strdup( fs_getstr(&s) );
+        }
+
+        // TODO: free original command line before replace with new one (like below)
+    }
+
+	if (option == 0) {
+        for( i = 0 ; args[i] != NULL ; i++ )
+            if ( args[i][0] == '$' ) {
+                newstr = VLlookup( args[i]+1 );
+                if ( newstr == NULL )
+                    newstr = "";
+                free(args[i]);
+                args[i] = strdup(newstr);
+            }
+    }
 }
