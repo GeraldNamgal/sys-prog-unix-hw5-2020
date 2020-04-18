@@ -40,7 +40,7 @@ int process(char *args[])
 		rv = do_control_command(args);
 	else if ( ok_to_execute() )
 		rv = do_command(args);
-	return rv;
+	return rv;                                  // return exit status of command
 }
 
 /*
@@ -67,7 +67,7 @@ int do_command(char **args)
         rv = !rv;
     }
 
-	return rv;				/* return exit status	*/
+	return rv;				
 }
 
 /*
@@ -76,19 +76,22 @@ int do_command(char **args)
  *  errors: -1 on fork() or wait() errors
  *    NOTE: this does not return the exit(n) status from child
  *	    Instead it returns the status word wait() receives
- *	    To get the exit(n) status, you must add some code
+ *	    To get the exit(n) status, you must add some code. Also, referenced:
+ *      https://www.geeksforgeeks.org/wait-system-call-c/
  */
 int execute(char *argv[])
 {
 	extern char **environ;		/* note: declared in <unistd.h>	*/
 	int	pid ;
-	int	child_info = -1;
+	int	child_info;
+    int exit_status = -1;
 
 	if ( argv[0] == NULL )		/* nothing succeeds		*/
 		return 0;
 
 	if ( (pid = fork())  == -1 )
 		perror("fork");
+
 	else if ( pid == 0 ){
 		environ = VLtable2environ();
 		signal(SIGINT, SIG_DFL);
@@ -98,8 +101,11 @@ int execute(char *argv[])
 		exit(1);
 	}
 	else {
-		if ( wait(&child_info) == -1 )
-			perror("wait");
+		if ( waitpid(pid, &child_info, 0) == -1 )
+			perror("waitpid failed");
 	}
-	return child_info;
+    if ( WIFEXITED( child_info ) ) {
+        exit_status = WEXITSTATUS( child_info );
+    }
+	return exit_status;
 }

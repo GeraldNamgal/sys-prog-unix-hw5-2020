@@ -14,6 +14,7 @@
 #include	"flexstr2.h"
 
 static bool is_number(char *);
+static char *is_var_name(char *, int *);
 
 /*
  * purpose: run a builtin command 
@@ -138,7 +139,7 @@ int is_exit( char **args, int *resultp )
         }            
         else {                                     // else no args, just command
             *resultp = 0;                                        // flag success
-            exit( get_last_result() );
+            exit( get_last_exit_stat() );
         }
         return 1;                                 // return it's an exit command
     }
@@ -230,65 +231,75 @@ int okname(char *str)
 
 /*
  * TODO
- * step through args.  REPLACE any arg with leading $ with the
- * value for that variable or "" if no match.
- * note: this is NOT how regular sh works
+ * 
+ * note: referenced
+ *       https://stackoverflow.com/questions/9655202/how-to-convert-integer-to-
+ *       string-in-c
  */
 void varsub(char **args)
 {
 	int	i, j, dollar_found = 0;
-	char    *newstr,
-            *cmdline = *args;
-    FLEXSTR s, buff;
+	char *cmdline = *args;
+    FLEXSTR s;
    
-    for ( i = 0; cmdline[i] != '\0'; i++ )
-    {
-        if ( cmdline[i] != '$' && dollar_found )   // new string being spun?
-            fs_addch(&s, cmdline[i]);                   // add to new string
-        else if ( cmdline[i] == '$' )
-        {
-            if ( !dollar_found ) {           // dollar not found previously?
-                dollar_found = 1;                              // flag found
-                fs_init(&s, 0);                           // init new string
-                for ( j = 0; j < i; j++ )        // fill new with old string
+    for ( i = 0; cmdline[i] != '\0'; i++ ) {
+        if ( cmdline[i] != '$' && dollar_found )       // new string being spun?
+            fs_addch(&s, cmdline[i]);                       // add to new string
+        else if ( cmdline[i] == '$' ) {
+            if ( !dollar_found ) {                  // '$' not found previously?
+                dollar_found = 1;                               // flag as found
+                fs_init(&s, 0);                               // init new string
+                for ( j = 0; j < i; j++ )            // fill new with old string
                     fs_addch(&s, cmdline[j]);   
+            }            
+            j = i + 1;                                // index to just after '$'
+            if ( isdigit( cmdline[j] ) )                            // a number?
+                while ( isdigit( cmdline[++j] ) ) {}         // skip over digits
+            else if ( isalnum( cmdline[j] ) || cmdline[j] == '_' )  // var name?
+                fs_addstr(&s, is_var_name(cmdline, &j) );  // put val in new str
+            else if ( cmdline[j] == '$' && ++j ) {
+                char num_string[MAX_PID_DIGITS];
+                sprintf( num_string, "%d", getpid() );
+                fs_addstr(&s, num_string);              
             }
-            fs_init(&buff, 0);                        // init temporary buff
-            j = i + 1;                               // index just after '$'
-            if ( isalnum( cmdline[j] ) || cmdline[j] == '_' ) // a var name?
-            {
-                fs_addch(&buff, cmdline[j]);   // adding var name to buff...
-                while ( isalnum( cmdline[++j] ) || cmdline[j] == '_' ) {
-                    fs_addch(&buff, cmdline[j]);
-                }
-                fs_addch(&buff, '\0');
-                newstr = VLlookup( fs_getstr(&buff) );   // look up value...
-                if ( newstr == NULL )
-                    newstr = "";
-                fs_addstr(&s, newstr);            // add value to new string
-                i = j - 1;                            // update i's position
+            else if ( cmdline[j] == '?' && ++j ) {
+                char num_string[MAX_EXSTATUS_DIG];
+                sprintf( num_string, "%d", get_last_exit_stat() );
+                fs_addstr(&s, num_string);       
             }
-            else if ( isdigit( cmdline[j] ) )                   // a number?
-            {
-                // TODO
-
-                fs_addch(&buff, cmdline[j]);
-                while ( isdigit( cmdline[++j] ) ) {
-                    fs_addch(&buff, cmdline[j]);
-                }
-                i = j - 1;
-            }
-            else                                  // else just a dollar sign
-            {
-                // TODO
-            }
-            fs_free( &buff );                         // free temporary buff
+            else                                      // else just a dollar sign
+                fs_addch(&s, '$');              
+            i = j - 1;                                  // update index position            
         }
     }
-    if (dollar_found) {                 // dollar found (spun a new string)?
-        free(*args);
-        *args = strdup( fs_getstr(&s) );          // copy new string to args
-        fs_free ( &s );                                   // free new string
-    }
-    
+    if (dollar_found) {                        // '$' found (spun a new string)?
+        free(*args);                             // change args to new string...
+        *args = strdup( fs_getstr(&s) );              
+        fs_free ( &s );                                       // free new string
+    }    
 }
+
+/* *
+ * 
+ * purpose: utility function that varsub() uses
+ */
+static char* is_var_name( char* cmdline, int* j )
+{
+    FLEXSTR buff;
+    char *newstr;
+                
+    fs_init(&buff, 0);                                    // init temporary buff
+    fs_addch(&buff, cmdline[*j]);                  // adding var name to buff...
+    while ( isalnum( cmdline[++*j] ) || cmdline[*j] == '_' )
+        fs_addch(&buff, cmdline[*j]);
+    fs_addch(&buff, '\0');
+    
+    newstr = VLlookup( fs_getstr(&buff) );                // looking up value...
+    if ( newstr == NULL )
+        newstr = "";                
+    
+    fs_free( &buff );                                     // free temporary buff
+
+    return newstr;                                   // return value of var name
+}
+

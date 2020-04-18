@@ -3,6 +3,6 @@
 
 /* Put here things that need to be seen by all parts of the program */
 void fatal(char *, char *, int);
-int get_last_result();
+int get_last_exit_stat();
 
 #endif
