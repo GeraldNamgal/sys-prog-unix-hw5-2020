@@ -14,6 +14,7 @@
 #include	"flexstr2.h"
 
 static bool is_number(char *);
+static void handle_dollar(FLEXSTR*, char*,int *);
 static char *is_var_name(char *, int *);
 
 /*
@@ -252,23 +253,8 @@ void varsub(char **args)
                 for ( j = 0; j < i; j++ )            // fill new with old string
                     fs_addch(&s, cmdline[j]);   
             }            
-            j = i + 1;                                // index to just after '$'
-            if ( isdigit( cmdline[j] ) )                            // a number?
-                while ( isdigit( cmdline[++j] ) ) {}         // skip over digits
-            else if ( isalnum( cmdline[j] ) || cmdline[j] == '_' )  // var name?
-                fs_addstr(&s, is_var_name(cmdline, &j) );  // put val in new str
-            else if ( cmdline[j] == '$' && ++j ) {
-                char num_string[MAX_PID_DIGITS];
-                sprintf( num_string, "%d", getpid() );
-                fs_addstr(&s, num_string);              
-            }
-            else if ( cmdline[j] == '?' && ++j ) {
-                char num_string[MAX_EXSTATUS_DIG];
-                sprintf( num_string, "%d", get_last_exit_stat() );
-                fs_addstr(&s, num_string);       
-            }
-            else                                      // else just a dollar sign
-                fs_addch(&s, '$');              
+            j = i + 1;                                // index to just after '$'         
+            handle_dollar(&s, cmdline, &j);
             i = j - 1;                                  // update index position            
         }
     }
@@ -277,6 +263,26 @@ void varsub(char **args)
         *args = strdup( fs_getstr(&s) );              
         fs_free ( &s );                                       // free new string
     }    
+}
+
+static void handle_dollar(FLEXSTR *s, char *cmdline, int *j)
+{
+    if ( isdigit( cmdline[*j] ) )                            // a number?
+        while ( isdigit( cmdline[++*j] ) ) {}         // skip over digits
+    else if ( isalnum( cmdline[*j] ) || cmdline[*j] == '_' )  // var name?
+        fs_addstr(s, is_var_name(cmdline, &*j) );  // put val in new str
+    else if ( cmdline[*j] == '$' && ++*j ) {
+        char num_string[MAX_PID_DIGITS];
+        sprintf( num_string, "%d", getpid() );
+        fs_addstr(s, num_string);              
+    }
+    else if ( cmdline[*j] == '?' && ++*j ) {
+        char num_string[MAX_EXSTATUS_DIG];
+        sprintf( num_string, "%d", get_last_exit_stat() );
+        fs_addstr(s, num_string);       
+    }
+    else                                      // else just a dollar sign
+        fs_addch(s, '$');              
 }
 
 /* *
