@@ -243,22 +243,27 @@ void varsub(char **args)
 	char *cmdline = *args;
     FLEXSTR s;
    
-    for ( i = 0; cmdline[i] != '\0'; i++ ) {
+    for ( i = 0; cmdline[i] != '\0'; i++ )
+    {
         if ( cmdline[i] != '$' && dollar_found )       // new string being spun?
             fs_addch(&s, cmdline[i]);                       // add to new string
-        else if ( cmdline[i] == '$' ) {
-            if ( !dollar_found ) {                  // '$' not found previously?
+        
+        else if ( cmdline[i] == '$' )
+        {
+            if ( !dollar_found )                    // '$' not found previously?
+            {   
                 dollar_found = 1;                               // flag as found
                 fs_init(&s, 0);                               // init new string
                 for ( j = 0; j < i; j++ )            // fill new with old string
                     fs_addch(&s, cmdline[j]);   
             }            
             j = i + 1;                                // index to just after '$'         
-            handle_dollar(&s, cmdline, &j);
+            handle_dollar(&s, cmdline, &j);          // decide how to handle '$'
             i = j - 1;                                  // update index position            
         }
     }
-    if (dollar_found) {                        // '$' found (spun a new string)?
+    if (dollar_found)                          // '$' found (spun a new string)?
+    {
         free(*args);                             // change args to new string...
         *args = strdup( fs_getstr(&s) );              
         fs_free ( &s );                                       // free new string
@@ -267,21 +272,23 @@ void varsub(char **args)
 
 static void handle_dollar(FLEXSTR *s, char *cmdline, int *j)
 {
-    if ( isdigit( cmdline[*j] ) )                            // a number?
-        while ( isdigit( cmdline[++*j] ) ) {}         // skip over digits
-    else if ( isalnum( cmdline[*j] ) || cmdline[*j] == '_' )  // var name?
-        fs_addstr(s, is_var_name(cmdline, &*j) );  // put val in new str
+    if ( isdigit( cmdline[*j] ) )                                   // a number?
+        while ( isdigit( cmdline[++*j] ) ) {}                // skip over digits
+    
+    else if ( isalnum( cmdline[*j] ) || cmdline[*j] == '_' )        // var name?
+        fs_addstr(s, is_var_name(cmdline, j) );            // put val in new str
+    
     else if ( cmdline[*j] == '$' && ++*j ) {
         char num_string[MAX_PID_DIGITS];
         sprintf( num_string, "%d", getpid() );
         fs_addstr(s, num_string);              
-    }
+    }    
     else if ( cmdline[*j] == '?' && ++*j ) {
         char num_string[MAX_EXSTATUS_DIG];
         sprintf( num_string, "%d", get_last_exit_stat() );
         fs_addstr(s, num_string);       
     }
-    else                                      // else just a dollar sign
+    else                                              // else just a dollar sign
         fs_addch(s, '$');              
 }
 
