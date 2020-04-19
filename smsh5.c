@@ -22,6 +22,8 @@
 #define	DFL_PROMPT	"> "
 #define BUFF_SIZE 4096
 
+static struct while_loop whileloop;
+
 static int last_result = 0;                             // to save exit statuses
 static int check_for_while(char*);
 
@@ -46,7 +48,7 @@ int main( int ac, char *av[] )
         prompt = "";                                            // change prompt
     }    
     while ( (cmdline = next_cmd(prompt, fp)) != NULL ) {
-        check_for_while(cmdline);           
+        check_for_while(cmdline);                      
         varsub(&cmdline);
         if ( (arglist = splitline(cmdline)) != NULL  ) {
             result = process(arglist);
@@ -91,7 +93,7 @@ void fatal(char *s1, char *s2, int n)
 int check_for_while(char* cmdline)
 {
     int i = 0;
-    char while_letters[5] = { 'w', 'h', 'i', 'l', 'e' };
+    char while_letters[MIN_WHILE_CHARS] = { 'w', 'h', 'i', 'l', 'e' };
 
     if ( strlen(cmdline) < MIN_WHILE_CHARS ) 
         return 0;                                       // not even enough chars
@@ -99,20 +101,24 @@ int check_for_while(char* cmdline)
     while ( cmdline[i] == ' ' || cmdline[i] == '\t' )     // skip leading spaces
         i++;
 
-    for ( int j = 0; j < 5; j++ )                      // check for word 'while'
+    for ( int j = 0; j < MIN_WHILE_CHARS; j++ ) {      // check for word 'while'
         if ( cmdline[i] != while_letters[j] )
             return 0;                                              // no 'while'
+        i++;                                              
+    }
 
-    if ( cmdline[++i] != ' ' || cmdline[i] != '\t' || cmdline[i] != '\n' )         
+    if ( cmdline[i] != ' ' && cmdline[i] != '\t' && cmdline[i] != '\n'
+        && cmdline[i] != '\0' )         
         return 0;                                         // no terminating char
 
     while ( cmdline[i] == ' ' || cmdline[i] == '\t' )       // skip to next char
         i++;
 
-    if ( cmdline[i] == '\0' ) {                    // not at least one argument?
-        fprintf(stderr, "smallsh: while: missing argument\n");
-        return -1;
-    }
+    if ( cmdline[i] == '\0' )                      // not at least one argument?
+        whileloop.condition = strdup("");
 
-    return 0;
+    else
+        whileloop.condition = strdup(cmdline + i);
+    
+    return 1;
 }

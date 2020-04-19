@@ -1,7 +1,7 @@
 #ifndef	SMSH_H
 #define	SMSH_H
 
-#define MIN_WHILE_CHARS 7              // enough for 'while' command plus an arg
+#define MIN_WHILE_CHARS 5              // enough for 'while' command plus an arg
 
 struct while_loop {
     char* condition;
