@@ -83,7 +83,7 @@ int execute(char *argv[])
 {
 	extern char **environ;		/* note: declared in <unistd.h>	*/
 	int	pid ;
-	int	child_info;
+	int	child_info = -1;
     int exit_status = -1;
 
 	if ( argv[0] == NULL )		/* nothing succeeds		*/
@@ -92,20 +92,23 @@ int execute(char *argv[])
 	if ( (pid = fork())  == -1 )
 		perror("fork");
 
-	else if ( pid == 0 ){
+	else if ( pid == 0 ) {                                              // child
 		environ = VLtable2environ();
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
-		execvp(argv[0], argv);
+		execvp(argv[0], argv);                 // if successful, does not return
 		perror("cannot execute command");
 		exit(1);
 	}
 	else {
-		if ( waitpid(pid, &child_info, 0) == -1 )
-			perror("waitpid failed");
+		if ( wait( &child_info ) == -1 )
+			perror("wait failed");
 	}
-    if ( WIFEXITED( child_info ) ) {
+    if ( WIFEXITED( child_info ) ) { 
         exit_status = WEXITSTATUS( child_info );
+    }
+    else if ( WIFSIGNALED( child_info ) ) {
+        exit_status = WTERMSIG( child_info );
     }
 	return exit_status;
 }

@@ -269,7 +269,6 @@ void varsub(char **args)
     if (new_string) {                                      // spun a new string?
         free(*args);                             // change args to new string...
         *args = strdup( fs_getstr(&s) );              
-        fs_free ( &s );                                       // free new string
     }    
 }
 
@@ -324,7 +323,6 @@ static char* is_var_name( char* cmdline, int* j )
     if ( newstr == NULL )
         newstr = "";                
     
-    fs_free( &buff );                                     // free temporary buff
     --*j;
 
     return newstr;                                   // return value of var name
