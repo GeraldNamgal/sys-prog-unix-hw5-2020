@@ -190,10 +190,8 @@ void check_for_while(char* cmdline)
             // TODO: nested ifs and whiles
             
         }
-        else {                                     // else not a control command
-            // TODO
+        else                                       // else not a control command
             add_to_while( cmdline );
-        }
     }
 }
 
@@ -266,7 +264,7 @@ void free_while_struct()
         whileloop.condition = NULL;
     }
     if ( whileloop.body ) {
-        fl_freelist( whileloop.body );
+        fl_free( &whileloop.body );
         whileloop.body = NULL;
     }
 }
@@ -276,7 +274,11 @@ void free_while_struct()
  */
 void add_to_while( char* cmdline )
 {
-    
+    if (!whileloop.body) {      // initialize if NULL
+        // TODO
+    }
+    else (  )
+
 }
 
 /* *

@@ -2,9 +2,11 @@
  * controlflow.h
  */
 
+#include	"flexstr2.h"
+
 struct while_loop {
     char* condition;
-    char** body;
+    FLEXLIST body;
 };
 
 int is_control_command(char *);
