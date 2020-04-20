@@ -15,4 +15,5 @@ int ok_to_execute();
 int get_if_state();
 void check_for_while(char*);
 void init_while_struct();
+void free_while_struct();
 

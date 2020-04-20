@@ -18,6 +18,7 @@ enum states   { NEUTRAL, WANT_THEN, THEN_BLOCK, ELSE_BLOCK, WANT_DO
 enum results  { SUCCESS, FAIL };
 
 static int if_state  = NEUTRAL;
+static int while_state = NEUTRAL;
 static int if_result = SUCCESS;
 static int last_stat = 0;
 static FLEXLIST strings;
@@ -26,7 +27,6 @@ int	syn_err(char *);
 int is_while(char* cmdline, int*);
 char* get_first_arg( char * );
 int execute_while();
-void free_while_struct();
 void add_to_while( char * );
 
 /*
@@ -44,15 +44,15 @@ int ok_to_execute()
 		syn_err("then expected");
 		rv = 0;
 	}
-    else if ( if_state == WANT_DO ) {
+    else if ( while_state == WANT_DO ) {
         syn_err("do expected");
         rv = 0;
     }
-    else if ( if_state == WANT_BODY ) {
-        if_state = WANT_DONE;
+    else if ( while_state == WANT_BODY ) {
+        while_state = WANT_DONE;
         rv = 0;
     }
-    else if ( if_state == WANT_DONE ) {
+    else if ( while_state == WANT_DONE ) {
         rv = 0;
     }
 	else if ( if_state == THEN_BLOCK && if_result == SUCCESS )
@@ -123,26 +123,26 @@ int do_control_command(char **args)
 		}
 	}
     else if ( strcmp(cmd,"while")==0 ){
-		if ( if_state != NEUTRAL )
+		if ( while_state != NEUTRAL )
 			rv = syn_err("while unexpected");
 		else {
-			if_state = WANT_DO;
+		    while_state = WANT_DO;
 			rv = 0;
 		}
 	}
     else if ( strcmp(cmd, "do")==0 ) {
-        if ( if_state != WANT_DO )
+        if ( while_state != WANT_DO )
             rv = syn_err("do unexpected");
         else {
-            if_state = WANT_BODY;
+            while_state = WANT_BODY;
             rv = 0;
         }
     }
     else if ( strcmp(cmd, "done")==0 ) {
-        if ( if_state != WANT_DONE )
+        if ( while_state != WANT_DONE )
             rv = syn_err("done unexpected");
         else {
-            if_state = NEUTRAL;            
+            while_state = NEUTRAL;            
             rv = execute_while();
         }
     }
@@ -169,17 +169,17 @@ void check_for_while(char* cmdline)
 {
     int i = 0;
 
-    if ( if_state == NEUTRAL ) {                      
+    if ( while_state == NEUTRAL ) {                      
        
         if ( is_while( cmdline, &i ) ) {                  // is command 'while'?
-            free_while_struct();                                 // clear struct            
+            free_while_struct();                         // clear struct for new            
             if ( cmdline[i] == '\0' )                       // save condition...
                 whileloop.condition = strdup(""); 
             else
                 whileloop.condition = strdup(cmdline + i);
         }
     }
-    else if ( if_state == WANT_BODY || if_state == WANT_DONE ) {
+    else if ( while_state == WANT_BODY || while_state == WANT_DONE ) {
 
         char* first_arg = NULL;
         first_arg = get_first_arg( cmdline );
@@ -192,7 +192,7 @@ void check_for_while(char* cmdline)
             
         }
         else                                       // else not a control command
-            add_to_while( cmdline );
+            fl_append( whileloop.body , strdup(cmdline) );
     }
 }
 
@@ -267,7 +267,8 @@ void free_while_struct()
         whileloop.condition = NULL;
     }
     
-    // TODO: free body
+    if ( fl_getlist( whileloop.body ) )
+        fl_free( whileloop.body );
 }
 
 /* *
@@ -282,40 +283,12 @@ void init_while_struct()
 /* *
  * TODO
  */
-void add_to_while( char* cmdline )
-{    
-    if ( !fl_getlist( whileloop.body ) )
-        printf("here\n");
-
-    fl_free( whileloop.body );
-
-    if ( !fl_getlist( whileloop.body ) )
-        printf("here1\n");
-
-    #if 0
-    if (!fl_getlist(whileloop.body)) {             // initialize if list is NULL
-        fl_init(&strings,0);
-        fl_append(&strings, cmdline);
-        whileloop.body = fl_getlist( &strings );
-    }
-    
-    else {
-        fl_init(&strings, 0);
-        for (int i = 0; whileloop.body[i] != NULL; i++)
-            fl_append(&strings, whileloop.body[i]);
-        fl_append(&strings, cmdline);
-        //fl_freelist( whileloop.body );
-        whileloop.body = fl_getlist( &strings );
-    }
-    #endif
-}
-
-/* *
- * TODO
- */
 int execute_while()
 {
-    printf("%s\n", whileloop.condition);
+    char** while_body = fl_getlist( whileloop.body ) ;
+
+    for ( int i = 0; i < fl_getcount( whileloop.body ); i++ )
+        printf("%s\n", while_body[i]);
 
     return 0;
 }
