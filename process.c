@@ -33,13 +33,21 @@
 int process(char *args[])
 {
 	int		rv = 0;
+    int  exclamation = 0;
 
+    if ( strcmp( args[0], "!" ) == 0 ) {
+        exclamation = 1;
+        args++;
+    }
 	if ( args[0] == NULL )
 		rv = 0;
 	else if ( is_control_command(args[0]) )
 		rv = do_control_command(args);
 	else if ( ok_to_execute() )
 		rv = do_command(args);
+    if ( exclamation == 1 ) {
+        rv = !rv;
+    }
 	return rv;                                  // return exit status of command
 }
 
@@ -54,18 +62,10 @@ int process(char *args[])
 int do_command(char **args)
 {
 	int  is_builtin(char **, int *);
-	int  rv;
-    int  exclamation = 0;
-
-    if ( strcmp( args[0], "!" ) == 0 ) {
-        exclamation = 1;
-        args++;
-    }
+	int  rv;    
+    
 	if ( !is_builtin(args, &rv) )		/* if not done by shell	*/ 
-		rv = execute(args);		/* fork and exec it	*/
-    if ( exclamation == 1 ) {
-        rv = !rv;
-    }
+		rv = execute(args);		/* fork and exec it	*/    
 
 	return rv;				
 }
