@@ -229,6 +229,8 @@ int is_while(char* cmdline, int* i)
  */
 char* get_first_arg( char *cmdline )
 {
+    // TODO: check how to free flexstr's
+    
     int i = 0;
     FLEXSTR s;
 
@@ -263,22 +265,37 @@ void free_while_struct()
         free( whileloop.condition );
         whileloop.condition = NULL;
     }
-    if ( whileloop.body ) {
-        fl_free( &whileloop.body );
-        whileloop.body = NULL;
-    }
+    
+    // TODO: free body
 }
 
 /* *
  * TODO
  */
 void add_to_while( char* cmdline )
-{
-    if (!whileloop.body) {      // initialize if NULL
-        // TODO
-    }
-    else (  )
+{    
+    FLEXLIST strings;
+    fl_init(&strings, 0);
+    whileloop.body=&strings;
+    if (!fl_getlist(whileloop.body))
+        printf("here\n");
 
+    #if 0
+    if (!fl_getlist(whileloop.body)) {             // initialize if list is NULL
+        fl_init(&strings,0);
+        fl_append(&strings, cmdline);
+        whileloop.body = fl_getlist( &strings );
+    }
+    
+    else {
+        fl_init(&strings, 0);
+        for (int i = 0; whileloop.body[i] != NULL; i++)
+            fl_append(&strings, whileloop.body[i]);
+        fl_append(&strings, cmdline);
+        //fl_freelist( whileloop.body );
+        whileloop.body = fl_getlist( &strings );
+    }
+    #endif
 }
 
 /* *
@@ -286,7 +303,7 @@ void add_to_while( char* cmdline )
  */
 int execute_while()
 {
-
+    printf("%s\n", whileloop.condition);
 
     return 0;
 }

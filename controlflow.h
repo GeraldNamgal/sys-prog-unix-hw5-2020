@@ -6,7 +6,7 @@
 
 struct while_loop {
     char* condition;
-    FLEXLIST body;
+    FLEXLIST* body;
 };
 
 int is_control_command(char *);
