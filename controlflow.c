@@ -20,6 +20,7 @@ enum results  { SUCCESS, FAIL };
 static int if_state  = NEUTRAL;
 static int if_result = SUCCESS;
 static int last_stat = 0;
+static FLEXLIST strings;
 
 int	syn_err(char *);
 int is_while(char* cmdline, int*);
@@ -272,13 +273,24 @@ void free_while_struct()
 /* *
  * TODO
  */
+void init_while_struct()
+{
+    fl_init( &strings, 0 );
+    whileloop.body = &strings;
+}
+
+/* *
+ * TODO
+ */
 void add_to_while( char* cmdline )
 {    
-    FLEXLIST strings;
-    fl_init(&strings, 0);
-    whileloop.body=&strings;
-    if (!fl_getlist(whileloop.body))
+    if ( !fl_getlist( whileloop.body ) )
         printf("here\n");
+
+    fl_free( whileloop.body );
+
+    if ( !fl_getlist( whileloop.body ) )
+        printf("here1\n");
 
     #if 0
     if (!fl_getlist(whileloop.body)) {             // initialize if list is NULL

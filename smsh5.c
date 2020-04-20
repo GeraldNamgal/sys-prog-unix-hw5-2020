@@ -36,6 +36,7 @@ int main( int ac, char *av[] )
 
 	prompt = DFL_PROMPT ;
 	setup();
+    init_while_struct();
 
     if ( *++av != NULL ) {                             // if argument, open file
         fp = fopen( *av, "r" );                                     // change fp
