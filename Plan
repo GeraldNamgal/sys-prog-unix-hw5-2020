@@ -1,0 +1,38 @@
+
+
+
+Homework question #13: "A Design Question: Supporting Output Redirection"
+
+    For non-built-in commands:
+    
+    In order to redirect stdout, we must change the default file descriptor in
+    the child process to point to a file that it can write to. Thus, after a
+    fork(), the child process would need to use an appropriate method that was
+    discussed in class such as using dup2() that would close the current
+    connection on file descriptor 1 (the index that stdout is used for) and then
+    change an open fd that was created by a call to a function that opens files
+    such as creat() to using the fd 1 position (by rule of "lowest available fd"
+    which would then be fd 1) for its file output. Under this new data flow
+    configuration, the child process could then call execvp() passing in the
+    command to be redirected and the output of the command would appear in the
+    specified file, i.e., instead of on the terminal screen. In "smallsh", this
+    could all be done in execute() in the "process.c" file in the child process'
+    code. To paraphrase from lecture 9's "stdinredir2.c" code, this could
+    include the following code:
+
+    int	fd, newfd;
+    fd = creat(filename, mode);	     /* open the disk file	*/
+    newfd = dup2(fd,1);		         /* close 1, dup fd to 1 */
+    if ( newfd != 1 ){
+		fprintf(stderr,"Could not duplicate fd to 1\n");
+		perror("dup2");
+		exit(1);
+	}
+	close(fd);			             /* close original fd	*/
+    execvp(commandv[0], commandv);
+
+    For built-in commands:
+
+    To redirect built-in commands, the process is similar to non-built-in
+    commands except a fork() isn't involved and instead of calling execvp()
+    after moving the file descriptor, it does its own function(s).
