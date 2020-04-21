@@ -24,6 +24,8 @@ static int while_state = NEUTRAL;
 static int if_result = SUCCESS;
 static int last_stat = 0;
 static FLEXLIST strings;
+static int inside_a_while = 0;
+static int inside_an_if = 0;
 
 int	syn_err(char *, int);
 int is_while(char* cmdline, int*);
@@ -92,7 +94,7 @@ int do_control_command(char **args)
 	int	rv = -1;
 
 	if( strcmp(cmd,"if")==0 ){
-		if ( if_state != NEUTRAL )
+		if ( if_state != NEUTRAL || while_state == WANT_DO )
 			rv = syn_err("if unexpected", IF_ERROR);
 		else {
 			last_stat = process(args+1);
@@ -101,7 +103,7 @@ int do_control_command(char **args)
 			rv = 0;
 		}
 	}
-	else if ( strcmp(cmd,"then")==0 ){
+	else if ( strcmp(cmd,"then")==0 ) {
 		if ( if_state != WANT_THEN )
 			rv = syn_err("then unexpected", IF_ERROR);
 		else {
@@ -126,11 +128,12 @@ int do_control_command(char **args)
 		}
 	}
     else if ( strcmp(cmd,"while")==0 ){
-		if ( while_state != NEUTRAL )
+		if ( while_state != NEUTRAL || if_state == WANT_THEN )
 			rv = syn_err("while unexpected", WHILE_ERROR);
 		else {
 		    while_state = WANT_DO;
 			rv = 0;
+            inside_a_while = 1;
 		}
 	}
     else if ( strcmp(cmd, "do")==0 ) {
@@ -160,15 +163,11 @@ int syn_err(char *msg, int error)
  * returns: -1 in interactive mode. Should call fatal in scripts
  */
 {
-	if (error == IF_ERROR) {
-        if_state = NEUTRAL;
-        // TODO: if were in a while, neutralize that too?
-    }
-
-    else if (error == WHILE_ERROR) {
-        while_state = NEUTRAL;
-        // TODO: if were in an if, neutralize that too?
-    }
+    if_state = NEUTRAL;    
+    while_state = NEUTRAL;
+    inside_a_while = 0;
+    inside_an_if = 0;
+    
 	fprintf(stderr,"syntax error: %s\n", msg);
 
 	return -1;
