@@ -10,6 +10,8 @@
 #include    "controlflow.h"
 #include	"flexstr2.h"
 #include    <stdlib.h>
+#include    "builtin.h"
+#include    "splitline2.h"
 
 static struct while_loop whileloop;
 
@@ -23,11 +25,12 @@ static int if_result = SUCCESS;
 static int last_stat = 0;
 static FLEXLIST strings;
 
-int	syn_err(char *);
+int	syn_err(char *, int);
 int is_while(char* cmdline, int*);
 char* get_first_arg( char * );
 int execute_while();
 void add_to_while( char * );
+int run_command(char *);
 
 /*
  * purpose: determine the shell should execute a command
@@ -41,11 +44,11 @@ int ok_to_execute()
 	int	rv = 1;		/* default is positive */
 
 	if ( if_state == WANT_THEN ) {
-		syn_err("then expected");
+		syn_err("then expected", IF_ERROR);
 		rv = 0;
 	}
     else if ( while_state == WANT_DO ) {
-        syn_err("do expected");
+        syn_err("do expected", WHILE_ERROR);
         rv = 0;
     }
     else if ( while_state == WANT_BODY ) {
@@ -90,7 +93,7 @@ int do_control_command(char **args)
 
 	if( strcmp(cmd,"if")==0 ){
 		if ( if_state != NEUTRAL )
-			rv = syn_err("if unexpected");
+			rv = syn_err("if unexpected", IF_ERROR);
 		else {
 			last_stat = process(args+1);
 			if_result = (last_stat == 0 ? SUCCESS : FAIL );            
@@ -100,7 +103,7 @@ int do_control_command(char **args)
 	}
 	else if ( strcmp(cmd,"then")==0 ){
 		if ( if_state != WANT_THEN )
-			rv = syn_err("then unexpected");
+			rv = syn_err("then unexpected", IF_ERROR);
 		else {
 			if_state = THEN_BLOCK;
 			rv = 0;
@@ -108,7 +111,7 @@ int do_control_command(char **args)
 	}
     else if ( strcmp(cmd, "else")==0 ) {
         if ( if_state != THEN_BLOCK )
-            rv = syn_err("else unexpected");
+            rv = syn_err("else unexpected", IF_ERROR);
         else {
             if_state = ELSE_BLOCK;
             rv = 0;
@@ -116,7 +119,7 @@ int do_control_command(char **args)
     }
 	else if ( strcmp(cmd,"fi")==0 ){
 		if ( !( if_state == THEN_BLOCK || if_state == ELSE_BLOCK ) )
-			rv = syn_err("fi unexpected");
+			rv = syn_err("fi unexpected", IF_ERROR);
 		else {
 			if_state = NEUTRAL;
 			rv = 0;
@@ -124,7 +127,7 @@ int do_control_command(char **args)
 	}
     else if ( strcmp(cmd,"while")==0 ){
 		if ( while_state != NEUTRAL )
-			rv = syn_err("while unexpected");
+			rv = syn_err("while unexpected", WHILE_ERROR);
 		else {
 		    while_state = WANT_DO;
 			rv = 0;
@@ -132,7 +135,7 @@ int do_control_command(char **args)
 	}
     else if ( strcmp(cmd, "do")==0 ) {
         if ( while_state != WANT_DO )
-            rv = syn_err("do unexpected");
+            rv = syn_err("do unexpected", WHILE_ERROR);
         else {
             while_state = WANT_BODY;
             rv = 0;
@@ -140,7 +143,7 @@ int do_control_command(char **args)
     }
     else if ( strcmp(cmd, "done")==0 ) {
         if ( while_state != WANT_DONE )
-            rv = syn_err("done unexpected");
+            rv = syn_err("done unexpected", WHILE_ERROR);
         else {
             while_state = NEUTRAL;            
             rv = execute_while();
@@ -151,14 +154,23 @@ int do_control_command(char **args)
 	return rv;
 }
 
-int syn_err(char *msg)
+int syn_err(char *msg, int error)
 /* purpose: handles syntax errors in control structures
  * details: resets state to NEUTRAL
  * returns: -1 in interactive mode. Should call fatal in scripts
  */
 {
-	if_state = NEUTRAL;
+	if (error == IF_ERROR) {
+        if_state = NEUTRAL;
+        // TODO: if were in a while, neutralize that too?
+    }
+
+    else if (error == WHILE_ERROR) {
+        while_state = NEUTRAL;
+        // TODO: if were in an if, neutralize that too?
+    }
 	fprintf(stderr,"syntax error: %s\n", msg);
+
 	return -1;
 }
 
@@ -285,10 +297,33 @@ void init_while_struct()
  */
 int execute_while()
 {
-    char** while_body = fl_getlist( whileloop.body ) ;
+    char** while_body = fl_getlist( whileloop.body );
+    int i = 0,
+        result = 0;
 
-    for ( int i = 0; i < fl_getcount( whileloop.body ); i++ )
-        printf("%s\n", while_body[i]);
+    while ( run_command( whileloop.condition ) == 0 ) {
+        result = run_command( while_body[i % fl_getcount( whileloop.body )] );        
+        i++;
+    }
 
-    return 0;
+    return result; // TODO: return value should be last function exit
+}
+
+/* *
+ * TODO
+ */
+int run_command(char* command)
+{
+    char    **arglist;
+	int	result = 0;
+    
+    char* cmd = strdup( command );
+    varsub(&cmd);
+    if ( (arglist = splitline(cmd)) != NULL  ) {
+        result = process(arglist);
+        freelist(arglist);
+    }
+    free (cmd);
+
+    return result;
 }

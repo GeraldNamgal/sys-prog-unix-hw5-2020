@@ -4,6 +4,9 @@
 
 #include	"flexstr2.h"
 
+#define IF_ERROR 0
+#define WHILE_ERROR 1
+
 struct while_loop {
     char* condition;
     FLEXLIST* body;
@@ -12,7 +15,6 @@ struct while_loop {
 int is_control_command(char *);
 int do_control_command(char **);
 int ok_to_execute();
-int get_if_state();
 void check_for_while(char*);
 void init_while_struct();
 void free_while_struct();

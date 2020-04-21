@@ -10,6 +10,7 @@
 #include	"process.h"
 #include    <string.h>
 
+static int last_result = 0;                             // to save exit statuses
 
 /* process.c
  * command processing layer: handles layers of processing
@@ -34,13 +35,13 @@ int process(char *args[])
 {
 	int		rv = 0;
     int  exclamation = 0;
-
-    if ( strcmp( args[0], "!" ) == 0 ) {
+    
+	if ( args[0] == NULL )
+		rv = 0;
+    else if ( strcmp( args[0], "!" ) == 0 ) {
         exclamation = 1;
         args++;
     }
-	if ( args[0] == NULL )
-		rv = 0;
 	else if ( is_control_command(args[0]) )
 		rv = do_control_command(args);
 	else if ( ok_to_execute() )
@@ -48,6 +49,8 @@ int process(char *args[])
     if ( exclamation == 1 ) {
         rv = !rv;
     }
+    last_result = rv;
+
 	return rv;                                  // return exit status of command
 }
 
@@ -111,4 +114,9 @@ int execute(char *argv[])
         exit_status = WTERMSIG( child_info );
     }
 	return exit_status;
+}
+
+int get_last_exit_stat()
+{
+    return last_result;
 }

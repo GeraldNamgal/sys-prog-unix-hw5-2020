@@ -23,8 +23,6 @@
 #define	DFL_PROMPT	"> "
 #define BUFF_SIZE 4096
 
-static int last_result = 0;                             // to save exit statuses
-
 void	setup();
 
 int main( int ac, char *av[] )
@@ -51,7 +49,6 @@ int main( int ac, char *av[] )
         varsub(&cmdline);
         if ( (arglist = splitline(cmdline)) != NULL  ) {
             result = process(arglist);
-            last_result = result;                                 // save result
             freelist(arglist);
         }
         free(cmdline);
@@ -60,11 +57,6 @@ int main( int ac, char *av[] )
         fclose(fp);                          // close file pointer if file input
 	
     return result;
-}
-
-int get_last_exit_stat()
-{
-    return last_result;
 }
 
 void setup()
