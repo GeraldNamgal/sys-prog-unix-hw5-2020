@@ -101,6 +101,7 @@ int do_control_command(char **args)
 			if_result = (last_stat == 0 ? SUCCESS : FAIL );            
 			if_state = WANT_THEN;            
 			rv = 0;
+            inside_an_if = 1;
 		}
 	}
 	else if ( strcmp(cmd,"then")==0 ) {
@@ -125,6 +126,7 @@ int do_control_command(char **args)
 		else {
 			if_state = NEUTRAL;
 			rv = 0;
+            inside_an_if = 0;
 		}
 	}
     else if ( strcmp(cmd,"while")==0 ){
@@ -150,6 +152,7 @@ int do_control_command(char **args)
         else {
             while_state = NEUTRAL;            
             rv = execute_while();
+            inside_a_while = 0; // TODO: delete inside_a.. stuff?
         }
     }
 	else 
@@ -198,9 +201,10 @@ void check_for_while(char* cmdline)
             fprintf( stderr, "smallsh: could not save while command\n" );
             return;
         }
-        if (is_control_command(first_arg)) {
-            // TODO: nested ifs and whiles
-            
+        if ( is_control_command( first_arg ) ) {
+            if (strcmp("if", first_arg)==0 || strcmp("then", first_arg) == 0
+                || strcmp("else", first_arg)==0 || strcmp("fi", first_arg) == 0)
+                    fl_append( whileloop.body , strdup(cmdline));         
         }
         else                                       // else not a control command
             fl_append( whileloop.body , strdup(cmdline) );
@@ -297,12 +301,11 @@ void init_while_struct()
 int execute_while()
 {
     char** while_body = fl_getlist( whileloop.body );
-    int i = 0,
-        result = 0;
+    int result = 0;
 
     while ( run_command( whileloop.condition ) == 0 ) {
-        result = run_command( while_body[i % fl_getcount( whileloop.body )] );        
-        i++;
+        for ( int i = 0; i < fl_getcount( whileloop.body ); i++ )
+            result = run_command( while_body[i] );        
     }
 
     return result; // TODO: return value should be last function exit
