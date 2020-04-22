@@ -132,11 +132,14 @@ int is_exit( char **args, int *resultp )
     if ( strcmp( args[0], "exit" ) == 0 ) {
         if ( args[1] != NULL ) {                      // there are args included
             if ( is_number( args[1] ) ) {                          // valid num?
-                *resultp = 0;                                     // flag sucess                
-                fl_freelist(args);
+                *resultp = 0;                                     // flag sucess
+                char exit_code[ strlen(args[1]) + 1 ];
+                for ( int i = 0; i < strlen(args[1]) + 1; i++ )
+                    exit_code[i] = args[1][i];                              
+                fl_freelist(args);                
                 free_cmdline();
                 free_while_struct();      // free control flow while_loop struct
-                exit( atoi( args[1] ) );            // exit passing in first arg
+                exit( atoi( exit_code ) );          // exit passing in first arg
             }           
             else {                                       // else not a valid num
                 *resultp = -1;                                     // flag error 
