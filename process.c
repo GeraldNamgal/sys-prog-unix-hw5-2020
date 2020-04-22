@@ -13,6 +13,11 @@
 
 static int last_result = 0;                             // to save exit statuses
 
+// Gerald Arocena
+// CSCI E-28, Spring 2020
+// 4-22-2020
+// hw 5
+
 /* process.c
  * command processing layer: handles layers of processing
  * 
@@ -122,6 +127,12 @@ int execute(char *argv[])
 	return exit_status;
 }
 
+/* *
+ *
+ * purpose: 
+ * args: 
+ * rets: 
+ */
 int get_last_exit_stat()
 {
     return last_result;

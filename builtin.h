@@ -1,3 +1,8 @@
+// Gerald Arocena
+// CSCI E-28, Spring 2020
+// 4-22-2020
+// hw 5
+
 /*
  * note: referenced
  *       https://stackoverflow.com/questions/6294133/maximum-pid-in-linux

@@ -1,3 +1,8 @@
+// Gerald Arocena
+// CSCI E-28, Spring 2020
+// 4-22-2020
+// hw 5
+
 /* controlflow.c
  *
  * "if" processing is done with two state variables
@@ -177,7 +182,10 @@ int syn_err(char *msg, int error)
 }
 
 /* *
- * 
+ *
+ * purpose: 
+ * args: 
+ * rets: 
  */
 void check_for_while(char* cmdline)
 {
@@ -214,7 +222,10 @@ void check_for_while(char* cmdline)
 }
 
 /* *
- * 
+ *
+ * purpose: 
+ * args: 
+ * rets: 
  */
 int is_while(char* cmdline, int* i)
 {
@@ -244,6 +255,9 @@ int is_while(char* cmdline, int* i)
 
 /* *
  *
+ * purpose: 
+ * args: 
+ * rets: 
  */
 char* get_first_arg( char *cmdline )
 {    
@@ -276,6 +290,9 @@ char* get_first_arg( char *cmdline )
 
 /* *
  *
+ * purpose: 
+ * args: 
+ * rets: 
  */
 void free_while_struct()
 {
@@ -289,7 +306,10 @@ void free_while_struct()
 }
 
 /* *
- * 
+ *
+ * purpose: 
+ * args: 
+ * rets: 
  */
 void init_while_struct()
 {
@@ -298,7 +318,10 @@ void init_while_struct()
 }
 
 /* *
- * 
+ *
+ * purpose: 
+ * args: 
+ * rets: 
  */
 int execute_while()
 {
@@ -314,7 +337,10 @@ int execute_while()
 }
 
 /* *
- * 
+ *
+ * purpose: 
+ * args: 
+ * rets: 
  */
 int run_command(char* command)
 {
@@ -332,11 +358,23 @@ int run_command(char* command)
     return result;
 }
 
+/* *
+ *
+ * purpose: 
+ * args: 
+ * rets: 
+ */
 int get_inside_a_while()
 {
     return inside_a_while;
 }
 
+/* *
+ *
+ * purpose: 
+ * args: 
+ * rets: 
+ */
 int get_inside_an_if()
 {
     return inside_an_if;

@@ -1,3 +1,8 @@
+// Gerald Arocena
+// CSCI E-28, Spring 2020
+// 4-22-2020
+// hw 5
+
 /* varlib.c
  *
  * a simple storage system to store name=value pairs
@@ -165,6 +170,12 @@ void VLlist()
 	}
 }
 
+/* *
+ *
+ * purpose: 
+ * args: 
+ * rets: 
+ */
 int VLdelete(char *name)
 {
     char *ptr;

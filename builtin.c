@@ -1,3 +1,8 @@
+// Gerald Arocena
+// CSCI E-28, Spring 2020
+// 4-22-2020
+// hw 5
+
 /* builtin.c
  * contains the switch and the functions for builtin commands
  */
@@ -69,6 +74,12 @@ int is_list_vars(char *cmd, int *resultp)
 	return 0;
 }
 
+/* *
+ *
+ * purpose: 
+ * args: 
+ * rets: 
+ */
 int is_unset(char **args, int *resultp)
 {
     if ( strcmp(args[0],"unset") == 0 ) {                 /* 'unset' command? */
@@ -101,6 +112,9 @@ int is_export(char **args, int *resultp)
 
 /* *
  * is_cd( char **args, int *resultp )
+ * purpose: 
+ * args: 
+ * rets: 
  */
 int is_cd( char **args, int *resultp )
 {
@@ -127,6 +141,12 @@ int is_cd( char **args, int *resultp )
     return 0;                                    // return it's not a cd command
 }
 
+/* *
+ *
+ * purpose: 
+ * args: 
+ * rets: 
+ */
 int is_exit( char **args, int *resultp )
 {
     if ( strcmp( args[0], "exit" ) == 0 ) {
@@ -173,6 +193,12 @@ bool is_number(char *str)
     return true;
 }
 
+/* *
+ *
+ * purpose: 
+ * args: 
+ * rets: 
+ */
 int is_read( char **args, int *resultp ) {
     if ( strcmp( args[0], "read" ) == 0 ) {
         if ( args[1] == NULL ) {                          // required arg given?
@@ -244,6 +270,9 @@ int okname(char *str)
 
 /* *
  * varsub(char **args)
+ * purpose:
+ * args:
+ * rets:
  * note: referenced
  *       https://stackoverflow.com/questions/9655202/how-to-convert-integer-to-
  *       string-in-c
@@ -283,6 +312,12 @@ void varsub(char **args)
     }    
 }
 
+/* *
+ *
+ * purpose: 
+ * args: 
+ * rets: 
+ */
 static void init_new_string(FLEXSTR* s, char* cmdline, int i)
 {
     fs_init(s, 0);                                            // init new string
@@ -290,6 +325,12 @@ static void init_new_string(FLEXSTR* s, char* cmdline, int i)
         fs_addch(s, cmdline[j]);
 }
 
+/* *
+ *
+ * purpose: 
+ * args: 
+ * rets: 
+ */
 static void handle_dollar(FLEXSTR *s, char *cmdline, int *j)
 {
     if ( isdigit( cmdline[*j] ) ) {                                 // a number?
@@ -318,6 +359,8 @@ static void handle_dollar(FLEXSTR *s, char *cmdline, int *j)
 /* *
  * 
  * purpose: utility function that varsub() uses
+ * args:
+ * rets:
  */
 static char* is_var_name( char* cmdline, int* j )
 {

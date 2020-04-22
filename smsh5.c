@@ -1,3 +1,15 @@
+// Gerald Arocena
+// CSCI E-28, Spring 2020
+// 4-22-2020
+// hw 5
+
+/* *
+ * smallsh
+ * Implements a version of the Unix shell
+ * note: This assignment uses starter code from the hw instructions
+ * usage: ./smsh [SCRIPT FILE]
+ */
+
 #include	<stdio.h>
 #include	<stdlib.h>
 #include	<unistd.h>
@@ -27,6 +39,12 @@ static char* cmdline;
 
 void	setup();
 
+/* *
+ * main( int ac, char *av[] )
+ * purpose: 
+ * args: 
+ * rets: 
+ */
 int main( int ac, char *av[] ) {
 	char	*prompt, **arglist;
 	int	result;
@@ -80,6 +98,12 @@ void fatal(char *s1, char *s2, int n)
 	exit(n);
 }
 
+/* *
+ * free_cmdline()
+ * purpose: 
+ * args: 
+ * rets: 
+ */
 void free_cmdline()
 {
     free(cmdline);

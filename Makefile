@@ -1,7 +1,9 @@
-#
+# Gerald Arocena
+# CSCI E-28, Spring 2020
+# 4-22-2020
+# hw 5
 # Makefile for smsh
-#  as of 2017-03-31
-#
+
 
 GCC = gcc -Wall  -g
 

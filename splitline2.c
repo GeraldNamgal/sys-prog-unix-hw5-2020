@@ -1,3 +1,8 @@
+// Gerald Arocena
+// CSCI E-28, Spring 2020
+// 4-22-2020
+// hw 5
+
 /* splitline2.c - commmand reading and parsing functions for smsh
  *    
  *    char *next_cmd(char *prompt, FILE *fp) - get next command
