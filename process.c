@@ -105,11 +105,11 @@ int execute(char *argv[])
 		execvp(argv[0], argv);                 // if successful, does not return
 		perror("cannot execute command");
         if ( errno == ENOENT )
-            exit(127);
+            _exit(127);
         else if ( errno == EACCES )
-            exit(126);
+            _exit(126);
         else
-		    exit(1);
+		    _exit(1);
 	}
 	else {
 		if ( wait( &child_info ) == -1 )
