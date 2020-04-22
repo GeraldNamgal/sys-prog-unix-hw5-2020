@@ -129,9 +129,9 @@ int execute(char *argv[])
 
 /* *
  *
- * purpose: 
- * args: 
- * rets: 
+ * purpose: get the exit status of the last command run
+ * args: none
+ * rets: the exit status
  */
 int get_last_exit_stat()
 {

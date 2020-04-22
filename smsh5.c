@@ -5,7 +5,8 @@
 
 /* *
  * smallsh
- * Implements a version of the Unix shell
+ * Implements a version of the Unix shell with a subset of features typically
+ * offered in Unix shells. 
  * note: This assignment uses starter code from the hw instructions
  * usage: ./smsh [SCRIPT FILE]
  */
@@ -41,9 +42,10 @@ void	setup();
 
 /* *
  * main( int ac, char *av[] )
- * purpose: 
- * args: 
- * rets: 
+ * purpose: starts up shell to accept and process commands. If a filename arg is
+ * given then runs the commands in the file
+ * args: en optional filename
+ * rets: exit status code
  */
 int main( int ac, char *av[] ) {
 	char	*prompt, **arglist;
@@ -100,9 +102,9 @@ void fatal(char *s1, char *s2, int n)
 
 /* *
  * free_cmdline()
- * purpose: 
- * args: 
- * rets: 
+ * purpose: frees the command line. Useful external processes to use
+ * args: none
+ * rets: none
  */
 void free_cmdline()
 {

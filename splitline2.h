@@ -3,6 +3,10 @@
 // 4-22-2020
 // hw 5
 
+/* *
+ * Header file for splitline2.c
+ */
+
 #ifndef	SPLITLINE_H
 #define	SPLITLINE_H
 

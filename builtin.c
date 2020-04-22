@@ -75,10 +75,10 @@ int is_list_vars(char *cmd, int *resultp)
 }
 
 /* *
- *
- * purpose: 
- * args: 
- * rets: 
+ * is_unset(char **args, int *resultp)
+ * purpose: if command is 'unset', then delete the given name and value 
+ * args: the command, exit status 
+ * rets: if was 'unset' command or not
  */
 int is_unset(char **args, int *resultp)
 {
@@ -112,9 +112,9 @@ int is_export(char **args, int *resultp)
 
 /* *
  * is_cd( char **args, int *resultp )
- * purpose: 
- * args: 
- * rets: 
+ * purpose: checks for 'cd' command and changes dir if so
+ * args: command, exit status
+ * rets: if was 'cd' command or not 
  */
 int is_cd( char **args, int *resultp )
 {
@@ -142,10 +142,10 @@ int is_cd( char **args, int *resultp )
 }
 
 /* *
- *
- * purpose: 
- * args: 
- * rets: 
+ * is_exit( char **args, int *resultp )
+ * purpose: checks if cmd was 'exit' and exits if so
+ * args: command, exit status
+ * rets: if cmd was 'exit' or not
  */
 int is_exit( char **args, int *resultp )
 {
@@ -179,8 +179,8 @@ int is_exit( char **args, int *resultp )
 }
 
 /* *
- *
- * purpose: utility function
+ * is_number(char *str)
+ * purpose: utility function to check if a string is a number
  * note: code referenced
  * https://www.geeksforgeeks.org/program-check-input-integer-string/
  */
@@ -194,10 +194,10 @@ bool is_number(char *str)
 }
 
 /* *
- *
- * purpose: 
- * args: 
- * rets: 
+ * is_read( char **args, int *resultp )
+ * purpose: checks if command was 'read' and does it if so
+ * args: the command, exit status
+ * rets: if command was 'read' or not
  */
 int is_read( char **args, int *resultp ) {
     if ( strcmp( args[0], "read" ) == 0 ) {
@@ -270,9 +270,9 @@ int okname(char *str)
 
 /* *
  * varsub(char **args)
- * purpose:
- * args:
- * rets:
+ * purpose: handles variable substitution of the type $VAR_NAME
+ * args: the string / command
+ * rets: none
  * note: referenced
  *       https://stackoverflow.com/questions/9655202/how-to-convert-integer-to-
  *       string-in-c
@@ -313,10 +313,10 @@ void varsub(char **args)
 }
 
 /* *
- *
- * purpose: 
- * args: 
- * rets: 
+ * init_new_string(FLEXSTR* s, char* cmdline, int i)
+ * purpose: utility function used in varsub() that copies a string to a FLEXSTR
+ * args: the FLEXSTR, string/command, max index to copy to
+ * rets: none
  */
 static void init_new_string(FLEXSTR* s, char* cmdline, int i)
 {
@@ -326,10 +326,10 @@ static void init_new_string(FLEXSTR* s, char* cmdline, int i)
 }
 
 /* *
- *
- * purpose: 
- * args: 
- * rets: 
+ * handle_dollar(FLEXSTR *s, char *cmdline, int *j)
+ * purpose: utility function for varsub() that determines how to handle the '$'
+ * args: a FLEXSTR, the cmdline, current index
+ * rets: none
  */
 static void handle_dollar(FLEXSTR *s, char *cmdline, int *j)
 {
@@ -357,10 +357,11 @@ static void handle_dollar(FLEXSTR *s, char *cmdline, int *j)
 }
 
 /* *
- * 
- * purpose: utility function that varsub() uses
- * args:
- * rets:
+ * is_var_name( char* cmdline, int* j )
+ * purpose: utility function that varsub() uses to look up the value of a stored
+ * var
+ * args: command line, index of cmdline that var_name is at
+ * rets: the value of the var_name
  */
 static char* is_var_name( char* cmdline, int* j )
 {

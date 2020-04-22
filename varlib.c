@@ -171,10 +171,10 @@ void VLlist()
 }
 
 /* *
- *
- * purpose: 
- * args: 
- * rets: 
+ * VLdelete(char *name)
+ * purpose: deletes a stored variable include its value
+ * args: the var name to delete at
+ * rets: if deletion failed or not
  */
 int VLdelete(char *name)
 {

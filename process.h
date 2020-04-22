@@ -3,6 +3,10 @@
 // 4-22-2020
 // hw 5
 
+/* *
+ * Header file for process.c
+ */
+
 #ifndef	PROCESS_H
 #define	PROCESS_H
 

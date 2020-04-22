@@ -5,6 +5,7 @@
 
 /*
  * controlflow.h
+ * Header for controlflow.c
  */
 
 #include	"flexstr2.h"
@@ -12,9 +13,9 @@
 #define IF_ERROR 0
 #define WHILE_ERROR 1
 
-struct while_loop {
-    char* condition;
-    FLEXLIST* body;
+struct while_loop {                 // while loop struct for shell's while loops
+    char* condition;             // the condition to test against before looping
+    FLEXLIST* body;        // the body of the while loop to run if condition met
 };
 
 int is_control_command(char *);

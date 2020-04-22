@@ -7,6 +7,11 @@
  *
  * "if" processing is done with two state variables
  *    if_state and if_result
+ * "while" processing is done with 
+ *    while_state 
+ * Also inside_an_if and inside_a_while check if program is in the middle of
+ * incomplete syntax
+ * 
  */
 #include	<stdio.h>
 #include 	<string.h>
@@ -28,9 +33,9 @@ static int if_state  = NEUTRAL;
 static int while_state = NEUTRAL;
 static int if_result = SUCCESS;
 static int last_stat = 0;
-static FLEXLIST strings;
-static int inside_a_while = 0;
-static int inside_an_if = 0;
+static FLEXLIST strings;                   // to hold the body of the while loop
+static int inside_a_while = 0;       // is process in unfinished 'while' syntax?
+static int inside_an_if = 0;             // is process in unfinished 'if' syntax
 
 int	syn_err(char *, int);
 int is_while(char* cmdline, int*);
@@ -90,7 +95,7 @@ int is_control_command(char *s)
 
 int do_control_command(char **args)
 /*
- * purpose: Process "if", "then", "fi" - change state or detect error
+ * purpose: Process control commands - change state or detect error
  * returns: 0 if ok, -1 for syntax error
  *   notes: I would have put returns all over the place, Barry says "no"
  */
@@ -106,7 +111,7 @@ int do_control_command(char **args)
 			if_result = (last_stat == 0 ? SUCCESS : FAIL );            
 			if_state = WANT_THEN;            
 			rv = 0;
-            inside_an_if = 1;                 
+            inside_an_if = 1;                                            // flag              
 		}
 	}
 	else if ( strcmp(cmd,"then")==0 ) {
@@ -131,7 +136,7 @@ int do_control_command(char **args)
 		else {
 			if_state = NEUTRAL;
 			rv = 0;
-            inside_an_if = 0;
+            inside_an_if = 0;                                            // flag
 		}
 	}
     else if ( strcmp(cmd,"while")==0 ){
@@ -140,7 +145,7 @@ int do_control_command(char **args)
 		else {
 		    while_state = WANT_DO;
 			rv = 0;
-            inside_a_while = 1;
+            inside_a_while = 1;                                          // flag
 		}
 	}
     else if ( strcmp(cmd, "do")==0 ) {
@@ -156,8 +161,8 @@ int do_control_command(char **args)
             rv = syn_err("done unexpected", WHILE_ERROR);
         else {
             while_state = NEUTRAL;            
-            rv = execute_while();
-            inside_a_while = 0; 
+            rv = execute_while();                    // while loop executed here
+            inside_a_while = 0;                                          // flag
         }
     }
 	else 
@@ -167,7 +172,7 @@ int do_control_command(char **args)
 
 int syn_err(char *msg, int error)
 /* purpose: handles syntax errors in control structures
- * details: resets state to NEUTRAL
+ * details: resets state to NEUTRAL and not inside incomplete syntax anymore
  * returns: -1 in interactive mode. Should call fatal in scripts
  */
 {
@@ -182,10 +187,11 @@ int syn_err(char *msg, int error)
 }
 
 /* *
- *
- * purpose: 
- * args: 
- * rets: 
+ * check_for_while(char* cmdline)
+ * purpose: Checks if raw cmdline is a while command and saves it in struct if
+ * so and if control state is appropriate
+ * args: a command line (from main)
+ * rets: none
  */
 void check_for_while(char* cmdline)
 {
@@ -209,7 +215,7 @@ void check_for_while(char* cmdline)
             fprintf( stderr, "smallsh: could not save while command\n" );
             return;
         }
-        if ( is_control_command( first_arg ) ) {
+        if ( is_control_command( first_arg ) ) {  // can have an 'if' in a while
             if (strcmp("if", first_arg)==0 || strcmp("then", first_arg) == 0
                 || strcmp("else", first_arg)==0 || strcmp("fi", first_arg) == 0)
                     fl_append( whileloop.body , strdup(cmdline));         
@@ -222,10 +228,11 @@ void check_for_while(char* cmdline)
 }
 
 /* *
- *
- * purpose: 
- * args: 
- * rets: 
+ * is_while(char* cmdline, int* i)
+ * purpose: utility function for check_for_while(). Checks if command is a
+ * 'while' command and moves a given index to its args if so
+ * args: the command, the index
+ * rets: 1 if true, 0 if false
  */
 int is_while(char* cmdline, int* i)
 {
@@ -254,10 +261,11 @@ int is_while(char* cmdline, int* i)
 }
 
 /* *
- *
- * purpose: 
- * args: 
- * rets: 
+ * get_first_arg( char *cmdline )
+ * purpose: utility function for check_for_while(). Gets the first arg of a
+ * string
+ * args: the string / command 
+ * rets: the first arg
  */
 char* get_first_arg( char *cmdline )
 {    
@@ -269,7 +277,7 @@ char* get_first_arg( char *cmdline )
                 i++;
 
     if ( cmdline[i] == '\0' )
-        return strdup("");                                            // no args
+        return strdup("");                      // no args, return emppty string
 
     else {
         fs_init( &s, 0 );                                // getting first arg...
@@ -289,10 +297,10 @@ char* get_first_arg( char *cmdline )
 }
 
 /* *
- *
- * purpose: 
- * args: 
- * rets: 
+ * free_while_struct()
+ * purpose: frees the while_loop struct
+ * args: none
+ * rets: none
  */
 void free_while_struct()
 {
@@ -307,9 +315,9 @@ void free_while_struct()
 
 /* *
  *
- * purpose: 
- * args: 
- * rets: 
+ * purpose: initializes the while_loop struct's body which uses a FLEXLIST
+ * args: none
+ * rets: none
  */
 void init_while_struct()
 {
@@ -318,10 +326,10 @@ void init_while_struct()
 }
 
 /* *
- *
- * purpose: 
- * args: 
- * rets: 
+ * execute_while()
+ * purpose: executes the while loop struct
+ * args: none
+ * rets: exit status of last command in while loop run
  */
 int execute_while()
 {
@@ -337,10 +345,10 @@ int execute_while()
 }
 
 /* *
- *
- * purpose: 
- * args: 
- * rets: 
+ * run_command(char* command)
+ * purpose: utility function for execute_while(). Executes a cmd string
+ * args: the command
+ * rets: the exit status of the command
  */
 int run_command(char* command)
 {
@@ -359,10 +367,10 @@ int run_command(char* command)
 }
 
 /* *
- *
- * purpose: 
- * args: 
- * rets: 
+ * get_inside_a_while()
+ * purpose: returns if the program is in the middle of incomplete 'while' syntax
+ * args: none
+ * rets: inside_a_while which stores the status of the syntax
  */
 int get_inside_a_while()
 {
@@ -370,10 +378,10 @@ int get_inside_a_while()
 }
 
 /* *
- *
- * purpose: 
- * args: 
- * rets: 
+ * get_inside_an_if()
+ * purpose: returns if the program is in the middle of incomplete 'if' syntax
+ * args: none
+ * rets: inside_an_if which stores the status of the syntax
  */
 int get_inside_an_if()
 {
