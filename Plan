@@ -35,4 +35,13 @@ Homework question #13: "A Design Question: Supporting Output Redirection"
 
     To redirect built-in commands, the process is similar to non-built-in
     commands except a fork() isn't involved and instead of calling execvp()
-    after moving the file descriptor, it does its own function(s).
+    after moving the file descriptor, it does its own function(s). When it's
+    done the redirection, it could then revert stdout back to the terminal. To
+    do this, it could use regular dup(1) to save the terminal's original stdout
+    position in a variable before switching stdout to the file. Running
+    dup2(saved_variable, 1) would revert it back to the terminal. And finally,
+    a call to close(saved_variable) would do away with the copy of the fd that
+    was made in the process.
+
+    Resources:
+    - https://stackoverflow.com/questions/11042218/c-restore-stdout-to-terminal

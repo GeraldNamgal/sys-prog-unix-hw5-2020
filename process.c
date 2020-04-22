@@ -101,7 +101,7 @@ int execute(char *argv[])
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
 		execvp(argv[0], argv);                 // if successful, does not return
-		perror("cannot execute command");
+		fprintf(stderr, "cannot execute command\n");
         if ( errno == ENOENT )
             _exit(127);
         else if ( errno == EACCES )
