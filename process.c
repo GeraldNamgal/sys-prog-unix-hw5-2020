@@ -48,7 +48,9 @@ int process(char *args[])
 	else if ( ok_to_execute() )
 		rv = do_command(args);
     if ( exclamation == 1 ) {
+        printf("%d\n", rv);
         rv = !rv;
+        printf("%d\n", rv);
     }
     last_result = rv;
 
