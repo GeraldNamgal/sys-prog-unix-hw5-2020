@@ -6,7 +6,7 @@
 #ifndef	BUILTIN_H
 #define	BUILTIN_H
 
-#define VAR_MAX_CHARS   80     // TODO: max buffer size ok (not sure they care)?
+#define VAR_MAX_CHARS   80                                    // max buffer size
 #define MAX_PID_DIGITS   7
 #define MAX_EXSTATUS_DIG 3                             // max exit status digits
 

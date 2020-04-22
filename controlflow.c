@@ -177,7 +177,7 @@ int syn_err(char *msg, int error)
 }
 
 /* *
- * TODO
+ * 
  */
 void check_for_while(char* cmdline)
 {
@@ -208,6 +208,8 @@ void check_for_while(char* cmdline)
         }
         else                                       // else not a control command
             fl_append( whileloop.body , strdup(cmdline) );
+       
+        free (first_arg);
     }
 }
 
@@ -244,9 +246,7 @@ int is_while(char* cmdline, int* i)
  *
  */
 char* get_first_arg( char *cmdline )
-{
-    // TODO: check how to free flexstr's
-    
+{    
     int i = 0;
     FLEXSTR s;
 
@@ -266,7 +266,9 @@ char* get_first_arg( char *cmdline )
         }
         fs_addch( &s, '\0' );
         
-        return strdup( fs_getstr(&s) );
+        char* ret_value = strdup( fs_getstr(&s) );
+        free( fs_getstr(&s) );
+        return ret_value;
     }
     
     return NULL;
@@ -287,7 +289,7 @@ void free_while_struct()
 }
 
 /* *
- * TODO
+ * 
  */
 void init_while_struct()
 {
@@ -296,7 +298,7 @@ void init_while_struct()
 }
 
 /* *
- * TODO
+ * 
  */
 int execute_while()
 {
@@ -308,11 +310,11 @@ int execute_while()
             result = run_command( while_body[i] );        
     }
 
-    return result; // TODO: return value should be last function exit
+    return result; 
 }
 
 /* *
- * TODO
+ * 
  */
 int run_command(char* command)
 {

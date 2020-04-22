@@ -50,7 +50,7 @@ int process(char *args[])
     if ( exclamation == 1 ) {
         rv = !rv;
     }
-    last_result = rv;
+    last_result = rv;                                       // store exit status
 
 	return rv;                                  // return exit status of command
 }

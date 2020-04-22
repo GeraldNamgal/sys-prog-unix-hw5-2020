@@ -46,7 +46,7 @@ int main( int ac, char *av[] ) {
         prompt = "";                                            // change prompt
     }    
     while ( (cmdline = next_cmd(prompt, fp)) != NULL ) {
-        check_for_while(cmdline);                       // TODO                
+        check_for_while(cmdline);                                       
         varsub(&cmdline);
         if ( (arglist = splitline(cmdline)) != NULL  ) {
             result = process(arglist);

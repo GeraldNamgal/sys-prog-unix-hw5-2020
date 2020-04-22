@@ -226,6 +226,7 @@ int assign(char *str)
 int okname(char *str)
 /*
  * purpose: determines if a string is a legal variable name
+ * args: 
  * returns: 0 for no, 1 for yes
  */
 {
@@ -238,9 +239,8 @@ int okname(char *str)
 	return ( cp != str );	/* no empty strings, either */
 }
 
-/*
- * TODO
- * 
+/* *
+ * varsub(char **args)
  * note: referenced
  *       https://stackoverflow.com/questions/9655202/how-to-convert-integer-to-
  *       string-in-c
@@ -275,7 +275,8 @@ void varsub(char **args)
     }
     if (new_string) {                                      // spun a new string?
         free(*args);                             // change args to new string...
-        *args = strdup( fs_getstr(&s) );              
+        *args = strdup( fs_getstr(&s) );
+        free( fs_getstr(&s) );              
     }    
 }
 
@@ -330,6 +331,8 @@ static char* is_var_name( char* cmdline, int* j )
     if ( newstr == NULL )
         newstr = "";                
     
+    free( fs_getstr(&buff) );
+
     --*j;
 
     return newstr;                                   // return value of var name
