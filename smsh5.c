@@ -36,7 +36,7 @@ int main( int ac, char *av[] )
 	setup();
     init_while_struct();                        // init FLEXLIST in while struct
 
-    if ( *++av != NULL ) {                             // if argument, open file
+    if ( *++av != NULL ) {                       // if has argument, script file
         fp = fopen( *av, "r" );                                     // change fp
         if (fp == NULL) {
             fprintf( stderr, "smallsh: error opening file\n" );

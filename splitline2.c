@@ -12,6 +12,7 @@
 #include	"smsh.h"
 #include	"flexstr2.h"
 #include    <stdbool.h>
+#include    "controlflow.h"
 
 /*
  * purpose: read next command line from fp
@@ -47,8 +48,11 @@ char * next_cmd(char *prompt, FILE *fp) {
         prev_char = c;
 	}
 
-	if ( c == EOF && pos == 0 )		/* EOF and no input	*/
-		return NULL;			/* say so		*/
+	if ( c == EOF && pos == 0 ) {	/* EOF and no input	*/
+		if ( get_inside_a_while() || get_inside_an_if() )    // from 'control.h'
+            fprintf(stderr, "smallsh: unexpected EOF\n");        
+        return NULL;			/* say so		*/
+    }
 	
     fs_addch(&s, '\0');			/* terminate string	*/
 	

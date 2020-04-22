@@ -1,2 +1,2 @@
-echo hello buck jam
-echo bye bam juck
+echo $?
+echo $?

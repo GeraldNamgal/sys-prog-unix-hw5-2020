@@ -101,7 +101,7 @@ int do_control_command(char **args)
 			if_result = (last_stat == 0 ? SUCCESS : FAIL );            
 			if_state = WANT_THEN;            
 			rv = 0;
-            inside_an_if = 1;
+            inside_an_if = 1;                 
 		}
 	}
 	else if ( strcmp(cmd,"then")==0 ) {
@@ -152,7 +152,7 @@ int do_control_command(char **args)
         else {
             while_state = NEUTRAL;            
             rv = execute_while();
-            inside_a_while = 0; // TODO: delete inside_a.. stuff?
+            inside_a_while = 0; 
         }
     }
 	else 
@@ -328,4 +328,14 @@ int run_command(char* command)
     free (cmd);
 
     return result;
+}
+
+int get_inside_a_while()
+{
+    return inside_a_while;
+}
+
+int get_inside_an_if()
+{
+    return inside_an_if;
 }

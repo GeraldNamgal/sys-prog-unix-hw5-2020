@@ -9,6 +9,7 @@
 #include	"controlflow.h"
 #include	"process.h"
 #include    <string.h>
+#include    <errno.h>
 
 static int last_result = 0;                             // to save exit statuses
 
@@ -101,7 +102,12 @@ int execute(char *argv[])
 		signal(SIGQUIT, SIG_DFL);
 		execvp(argv[0], argv);                 // if successful, does not return
 		perror("cannot execute command");
-		exit(1);
+        if ( errno == ENOENT )
+            exit(127);
+        else if ( errno == EACCES )
+            exit(126);
+        else
+		    exit(1);
 	}
 	else {
 		if ( wait( &child_info ) == -1 )

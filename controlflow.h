@@ -18,4 +18,6 @@ int ok_to_execute();
 void check_for_while(char*);
 void init_while_struct();
 void free_while_struct();
+int get_inside_a_while();
+int get_inside_an_if();
 
