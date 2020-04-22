@@ -23,11 +23,12 @@
 #define	DFL_PROMPT	"> "
 #define BUFF_SIZE 4096
 
+static char* cmdline;
+
 void	setup();
 
-int main( int ac, char *av[] )
-{
-	char	*cmdline, *prompt, **arglist;
+int main( int ac, char *av[] ) {
+	char	*prompt, **arglist;
 	int	result;
     FILE *fp = stdin;
     void varsub(char **);
@@ -56,6 +57,7 @@ int main( int ac, char *av[] )
     if ( strcmp( prompt, "" ) == 0 )
         fclose(fp);                          // close file pointer if file input
 	
+    free_while_struct();
     return result;
 }
 

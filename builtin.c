@@ -12,6 +12,7 @@
 #include    <unistd.h>
 #include    <stdbool.h>
 #include	"flexstr2.h"
+#include    "controlflow.h"
 
 static bool is_number(char *);
 static void handle_dollar(FLEXSTR*, char*,int *);
@@ -132,6 +133,8 @@ int is_exit( char **args, int *resultp )
         if ( args[1] != NULL ) {                      // there are args included
             if ( is_number( args[1] ) ) {                          // valid num?
                 *resultp = 0;                                     // flag sucess
+                fl_freelist(args);
+                free_while_struct();      // free control flow while_loop struct
                 exit( atoi( args[1] ) );            // exit passing in first arg
             }           
             else {                                       // else not a valid num
@@ -141,6 +144,8 @@ int is_exit( char **args, int *resultp )
         }            
         else {                                     // else no args, just command
             *resultp = 0;                                        // flag success
+            fl_freelist(args);
+            free_while_struct();          // free control flow while_loop struct
             exit( get_last_exit_stat() );
         }
         return 1;                                 // return it's an exit command
