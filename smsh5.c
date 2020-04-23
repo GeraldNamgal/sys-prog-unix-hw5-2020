@@ -78,6 +78,7 @@ int main( int ac, char *av[] ) {
         fclose(fp);                          // close file pointer if file input
 	
     free_while_struct();
+    free_table();
     return result;
 }
 
