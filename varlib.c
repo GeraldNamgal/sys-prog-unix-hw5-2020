@@ -101,7 +101,7 @@ char * VLlookup( char *name )
 	struct var *itemp;
 
 	if ( (itemp = find_item(name,0)) != NULL )
-		return itemp->str + 1 + strlen(name);                // return the value
+		return itemp->str + 1 + strlen(name);        // return the value
 	return "";
 
 }

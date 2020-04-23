@@ -75,10 +75,9 @@ int main( int ac, char *av[] ) {
         free(cmdline);
     }    
     if ( strcmp( prompt, "" ) == 0 )
-        fclose(fp);                          // close file pointer if file input
-	
+        fclose(fp);                          // close file pointer if file input	
     free_while_struct();
-    free_table();
+    free_table();                                               // environ table
     return result;
 }
 

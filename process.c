@@ -57,7 +57,7 @@ int process(char *args[])
     }
     last_result = rv;                                       // store exit status
 
-	return rv;                                  // return exit status of command
+	return rv;                              // return exit status of command
 }
 
 /*
@@ -88,8 +88,7 @@ int do_command(char **args)
  *	    To get the exit(n) status, you must add some code. Also, referenced:
  *      https://www.geeksforgeeks.org/wait-system-call-c/
  */
-int execute(char *argv[])
-{
+int execute(char *argv[]) {
 	extern char **environ;		/* note: declared in <unistd.h>	*/
 	int	pid ;
 	int	child_info = -1;
@@ -97,15 +96,13 @@ int execute(char *argv[])
 
 	if ( argv[0] == NULL )		/* nothing succeeds		*/
 		return 0;
-
 	if ( (pid = fork())  == -1 )
 		perror("fork");
-
-	else if ( pid == 0 ) {                                              // child
+	else if ( pid == 0 ) {                                          // child
 		environ = VLtable2environ();
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
-		execvp(argv[0], argv);                 // if successful, does not return
+		execvp(argv[0], argv);         // if successful, does not return
 		fprintf(stderr, "cannot execute command\n");
         if ( errno == ENOENT )
             _exit(127);

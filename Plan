@@ -30,7 +30,7 @@ Homework question #13: "A Design Question: Supporting Output Redirection"
 		perror("dup2");
 		exit(1);
 	}
-	close(fd);			             /* close original fd	*/
+	close(fd);			           /* close original fd	*/
     execvp(commandv[0], commandv);
 
     For built-in commands:

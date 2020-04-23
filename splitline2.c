@@ -27,38 +27,33 @@
  *   notes: allocates space in BUFSIZ chunks.  
  */
 char * next_cmd(char *prompt, FILE *fp) {
-	int	c;				                                  /* input char		*/
-	FLEXSTR	s;				                             /* the command		*/
+	int	c;				          /* input char	*/
+	FLEXSTR	s;				 /* the command		*/
 	int	pos = 0;
     char prev_char = ' ';
     bool found_comment = false; 
 
-	fs_init(&s, 0);				                     /* initialize the str	*/
-	printf("%s", prompt);				                  /* prompt user	*/
+	fs_init(&s, 0);		           /* initialize the str	*/
+	printf("%s", prompt);				 /* prompt user	*/
 	while( ( c = getc(fp)) != EOF ) {        
-		if ( c == '\n' )                                 /* end of command? */
+		if ( c == '\n' )                     /* end of command? */
 			break;
-
         if ( found_comment == true )
             continue;
-
         if ( c == '#' && ( prev_char == ' ' || prev_char == '\t' ) ) {
             found_comment = true;
             continue;
-        } 
-		
-		fs_addch(&s, c);                                 /* no, add to buffer */
+        } 		
+		fs_addch(&s, c);                  /* no, add to buffer */
 		pos++;
 
         prev_char = c;
 	}
-
 	if ( c == EOF && pos == 0 ) {	/* EOF and no input	*/
-		if ( get_inside_a_while() || get_inside_an_if() )    // from 'control.h'
+		if ( get_inside_a_while() || get_inside_an_if() ) 
             fprintf(stderr, "smallsh: unexpected EOF\n");        
         return NULL;			/* say so		*/
-    }
-	
+    }	
     fs_addch(&s, '\0');			/* terminate string	*/
 	
     return fs_getstr(&s);			/* get copy of string	*/

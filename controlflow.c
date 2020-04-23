@@ -197,8 +197,7 @@ void check_for_while(char* cmdline)
 {
     int i = 0;
 
-    if ( while_state == NEUTRAL ) {                      
-       
+    if ( while_state == NEUTRAL ) {        
         if ( is_while( cmdline, &i ) ) {                  // is command 'while'?
             free_while_struct();                         // clear struct for new            
             if ( cmdline[i] == '\0' )                       // save condition...
@@ -208,7 +207,6 @@ void check_for_while(char* cmdline)
         }
     }
     else if ( while_state == WANT_BODY || while_state == WANT_DONE ) {
-
         char* first_arg = NULL;
         first_arg = get_first_arg( cmdline );
         if ( first_arg == NULL ) {

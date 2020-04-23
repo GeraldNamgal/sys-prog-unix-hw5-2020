@@ -87,7 +87,7 @@ int is_unset(char **args, int *resultp)
             *resultp = VLdelete(args[1]);
 		else
             *resultp = -1;                           // flag error (missing arg)
-		return 1;                                  // return was 'unset' command
+		return 1;                          // return was 'unset' command
 	}
     return 0;                                  // return was not 'unset' command
 }
@@ -210,8 +210,7 @@ int is_read( char **args, int *resultp ) {
         else {
             char buff[VAR_MAX_CHARS];            
             fgets(buff, VAR_MAX_CHARS, stdin);                 // get user input
-            buff[strcspn ( buff, "\n" )] = '\0';    // remove newline from input
-            
+            buff[strcspn ( buff, "\n" )] = '\0';    // remove newline from input            
             char *name_val_pair;                             // concatenating...
             name_val_pair = malloc( strlen(buff) + strlen(args[1]) + 2 );
             if( name_val_pair == NULL ) {                    // if malloc failed
@@ -221,7 +220,6 @@ int is_read( char **args, int *resultp ) {
             }
             strcat( strcpy( name_val_pair, args[1] ), "=" );       // do concats 
             strcat( name_val_pair, buff );               
-
             int ret_value = assign( name_val_pair );      // assign input to var
             free(name_val_pair);                                  // free malloc
             if ( ret_value == -1 ) {
@@ -279,8 +277,7 @@ int okname(char *str)
  *       https://stackoverflow.com/questions/9655202/how-to-convert-integer-to-
  *       string-in-c
  */
-void varsub(char **args)
-{
+void varsub(char **args) {
 	int	i, j, new_string = 0;
 	char *cmdline = *args;
     FLEXSTR s;
