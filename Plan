@@ -1,8 +1,7 @@
 Gerald Arocena
 CSCI E-28, Spring 2020
 4-22-2020
-hw 5
-
+Plan for hw 5
 
 Homework question #13: "A Design Question: Supporting Output Redirection"
 
@@ -48,3 +47,78 @@ Homework question #13: "A Design Question: Supporting Output Redirection"
 
     Resources:
     - https://stackoverflow.com/questions/11042218/c-restore-stdout-to-terminal
+
+Purpose:
+
+The purpose of smallsh is to expand on the smsh5 implementation from lecture
+which implements a version of the shell Unix program (e.g., dash) albeit with a
+subset of features. smallsh will expand on the example from lecture to include
+running shell scripts, use variables, 'else' syntax for 'if..then', while loops,
+and more built-in functions.  
+
+Outline:
+
+If no argument is given to smallsh on the command line, then it runs similar to
+a regular shell that perpetually prompts a user for commands and runs them until
+an exit command is given. Otherwise, if a filename argument is given, then
+commands are taken from the given file and run.
+
+Interface:
+
+    The command line syntax is shown below:
+
+        ./smsh [SCRIPT FILE]
+
+    If a script file is given then the command line is the only interface for
+    smallsh. Otherwise, the user will be perpetually prompted for commands to
+    run until an exit command is received. The prompt for smallsh is "> ".
+
+Data Structures:
+
+For my implementation of smallsh, I made use of the structs in flexstr2.h for
+managing strings and lists of strings throughout the program. I also made use of
+the struct var in varlib.c that stores the table of shell variables. For my
+while loop implementation, I created a struct while_loop in controlflow.h and
+used in controlflow.c that stores a char* for the condition of the while loop
+and a FLEXLIST* for the body.
+
+Program Flow:
+
+1. Set up shell environment.
+2. Get input from user if no args given. If a filename argument was given get
+   input from there.
+3. Perpetually prompt user for commands and process them if no args given until
+   an exit command is received. If a filename arg was given, then run all
+   commands until EOF there instead.
+
+Algorithm:
+
+smallsh makes use of the "fork(), execvp(), wait(), and then return" pattern for
+non-built-in commands. The program also makes use of a struct while_loop that I
+created to be utilized at strategic points in the program. 
+
+Error Handling:
+
+    The program errors that are flagged include:
+
+        [1] When system calls fail
+        [2] When a command or series of commands has invalid syntax
+        [3] When invalid arguments are passed in with the command or are missing
+        [4] When malloc fails
+
+Layering:
+
+    main() in smsh5.c calls:
+        setup()                -- initializes the shell
+        init_while_struct()    -- initializes the while struct
+        nextcmd()              -- reads in the next command with parsing logic
+        check_for_while()      -- checks raw command if is a 'while' command and
+          (in controlflow.c)      handles the while struct appropriately 
+        varsub()               -- does any variable substitution on the command
+        splitline()            -- splits the command into tokens
+        process()              -- processes (and executes) the command taking
+                                  into account control flow
+
+File Structure:
+
+    

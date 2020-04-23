@@ -1,0 +1,28 @@
+Gerald Arocena
+CSCI E-20, Spring 2020
+4-22-2020
+README for hw 5
+
+"In this file put a list of the files you are submitting with
+a brief (four to ten words) description of each one." --
+
+- Makefile                   <-- the Makefile needed to run the program 
+- Plan                       <-- the plan for how my program will be implemented
+-                      <-- the main program
+-                      <-- 
+-                    <-- 
+-                    <-- 
+-                  <-- 
+-                  <-- 
+
+"Also put any notes to the grader." --
+
+    To compile , navigate to the directory with .c and run "make" at the
+    command line. Then to run , the usage is "./".
+
+Homework question #13: "A Design Question: Supporting Output Redirection" --
+
+    See Plan.
+
+
+
