@@ -16,5 +16,6 @@ int	VLstore( char *, char * );
 char	**VLtable2environ();
 int	VLenviron2table(char **);
 int VLdelete(char *);
+void free_table();
 
 #endif

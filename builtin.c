@@ -159,6 +159,7 @@ int is_exit( char **args, int *resultp )
                 fl_freelist(args);                
                 free_cmdline();
                 free_while_struct();      // free control flow while_loop struct
+                free_table();
                 exit( atoi( exit_code ) );          // exit passing in first arg
             }           
             else {                                       // else not a valid num
@@ -171,6 +172,7 @@ int is_exit( char **args, int *resultp )
             fl_freelist(args);
             free_cmdline();
             free_while_struct();          // free control flow while_loop struct
+            free_table();
             exit( get_last_exit_stat() );
         }
         return 1;                                 // return it's an exit command

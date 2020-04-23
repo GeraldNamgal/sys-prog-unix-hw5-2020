@@ -268,3 +268,14 @@ char ** VLtable2environ()
 	envtab[j] = NULL;
 	return envtab;
 }
+
+void free_table()
+{
+    for (int i = 0; i < MAXVARS && tab[i].str != NULL; i++ )
+        if ( tab[i].str )
+        {
+            free( tab[i].str );                             // free if had value
+            tab[i].str = NULL;  
+            tab[i].global = 0;    
+        }
+}
