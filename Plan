@@ -111,6 +111,7 @@ Layering:
     main() in smsh5.c calls:
         setup()                -- initializes the shell
         init_while_struct()    -- initializes the while struct
+          (in controlflow.c)
         nextcmd()              -- reads in the next command with parsing logic
         check_for_while()      -- checks raw command if is a 'while' command and
           (in controlflow.c)      handles the while struct appropriately 
@@ -121,4 +122,11 @@ Layering:
 
 File Structure:
 
-    
+    smsh5.c                    -- contains main() and setup()
+    splitline2.c               -- contains nextcmd() and splitline()
+    process.c                  -- contains do_command() and execute()
+    controlflow.c              -- contains ok_to_execute(), is_control_command()
+                                  , do_control_command(), check_for_while(),
+                                  execute_while()
+    builtin.c                  -- contains varsub()
+    varlib.c                   -- contains VLdelete() used by 'unset' command

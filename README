@@ -6,19 +6,27 @@ README for hw 5
 "In this file put a list of the files you are submitting with
 a brief (four to ten words) description of each one." --
 
-- Makefile                   <-- the Makefile needed to run the program 
-- Plan                       <-- the plan for how my program will be implemented
--                      <-- the main program
--                      <-- 
--                    <-- 
--                    <-- 
--                  <-- 
--                  <-- 
+- Makefile            <-- the Makefile needed to run the program 
+- Plan                <-- the plan for how my program will be implemented
+- smsh5.c             <-- the main program
+- smsh.h              <-- header file for smsh5.c
+- splitline.c         <-- parses strings/commands and tokenizes them
+- splitline.h         <-- header file for splitline.c
+- process.c           <-- processes and executes commands/strings
+- process.h           <-- header file for process.c
+- controlflow.c       <-- handles ifs, whiles, flow of execution
+- controlflow.h       <-- header file for controlflow.c
+- builtin.c           <-- handles built-in commands and variable substitution
+- builtin.h           <-- header file for builtin.c
+- varlib.c            <-- handles shell variables in a table store 
+- varlib.h            <-- header file for varlib.c
+- flexstr2.c          <-- handles dynamic allocation of strings and string lists
+- flexstr2.h          <-- header file for flexstr2.c
 
 "Also put any notes to the grader." --
 
-    To compile , navigate to the directory with .c and run "make" at the
-    command line. Then to run , the usage is "./".
+    To compile smallsh, navigate to the directory with smsh5.c and run "make" at
+    the command line. Then to run it, the usage is "./smsh [SCRIPT FILE]".
 
 Homework question #13: "A Design Question: Supporting Output Redirection" --
 
